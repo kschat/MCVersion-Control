@@ -1,64 +1,58 @@
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.DefaultTableModel;
-
-import com.apple.eawt.Application;
-
+import javax.swing.event.*;
+import javax.swing.filechooser.*;
+import javax.swing.table.*;
+//import com.apple.eawt.Application;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.jar.Attributes.Name;
+import java.io.*;
+import java.util.*;
 
-public class GUI extends JFrame implements ActionListener, TableModelListener, MouseListener, KeyListener {
+
+public class GUI extends JFrame implements ActionListener, TableModelListener, MouseListener, KeyListener, WindowListener {
 	private final int HEIGHT=450;
 	private final int WIDTH=650;
 	private final String CURRVERTEXT="<html><b>Current Version:</b><br /><center>";
-	private String[] COLUMNNAMES = {"Name:", "Version:"};
 	private JPanel mainPanel, controlPanel, labelPanel, buttonPanel;
 	private MCVersionSwap mcSwap;
 	private JLabel currentVersionLabel;
-	private JComboBox versionComboBox;
 	private JTable versionTable;
 	JScrollPane versionTableScroll;
 	private JButton switchButton, launchButton;
-	private JFileChooser jarFileChooser;
-	private FileDialog macFileChooser;
+	private FileDialog jarFileChooser;
 	private String versionTableValue="";
+	private JPopupMenu versionMenu;
 	
 	private JMenuBar menuBar;
 	private JMenu fileMenu, editMenu, helpMenu;
-	private JMenuItem exitItem, aboutItem, updateItem, addJarItem;
+	private JMenuItem exitItem, aboutItem, updateItem, addJarItem, renameItem, deleteItem, reportBugItem;
 	
-	MacApplicationAdapter macApplication;
+	//MacApplicationAdapter macApplication;
 	
 	public GUI() {
 		super("Minecraft Version Swapper");
-		macApplication = new MacApplicationAdapter();
+		//macApplication = new MacApplicationAdapter();
 		
 		try {
-			mcSwap = new MCVersionSwap();
+			mcSwap = MCVersionSwap.getInstance();
 		} 
-		catch (IOException e) { }
+		catch (IOException e) { 
+			System.out.println(e.getMessage());
+			
+			/*
+			 * Uncomment for final version
+			 */
+			//JOptionPane.showMessageDialog(null, "There was a problem reading your minecraft files.");
+			//MCVersionSwap.closeProgram();
+		}
 		
 		mainPanel = new JPanel();
 		labelPanel = new JPanel();
 		controlPanel = new JPanel();
 		buttonPanel = new JPanel();
-		versionTable = new JTable(mcSwap.get2DArray(), COLUMNNAMES)  {
-			public boolean isCellEditable(int rowIndex,int mColIndex) {
-				return false;
-			}
-		};
-		
+		versionTable = new JTable(new VersionTableModel(MCVersionSwap.getEntities()));
+		//this.removeKeyBinding();
+		this.addKeyBinding();
 		currentVersionLabel = new JLabel(CURRVERTEXT + MCVersionSwap.getCurrentVersion()+"</center></html>");
 		switchButton = new JButton("Switch");
 		launchButton = new JButton("Launch minecraft");
@@ -69,14 +63,8 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.buildMenu();
 		this.buildPanel();
-		
-		if(MCVersionSwap.getOS().equals(OS.windows)) {
-			this.buildJarFileChooser();
-		}
-		
-		if(MCVersionSwap.getOS().equals(OS.mac)) {
-			this.buildMacFileChooser();
-		}
+		this.buildJarFileChooser();
+		this.buildPopupMenu();
 	}
 	
 	public void buildMenu() {
@@ -88,11 +76,16 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		updateItem = new JMenuItem("Check For Updates");
 		aboutItem = new JMenuItem("About");
 		addJarItem = new JMenuItem("Add Jar...");
+		reportBugItem = new JMenuItem("Report a bug");
 		
-		fileMenu.add(exitItem);
+		if(MCVersionSwap.getOS().equals(OS.windows)) {
+			fileMenu.add(exitItem);
+			helpMenu.add(aboutItem);
+		}
+		
 		fileMenu.add(addJarItem);
 		helpMenu.add(updateItem);
-		helpMenu.add(aboutItem);
+		helpMenu.add(reportBugItem);
 		
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
@@ -101,18 +94,35 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		exitItem.addActionListener(this);
 		aboutItem.addActionListener(this);
 		addJarItem.addActionListener(this);
-		
+		reportBugItem.addActionListener(this);
 		this.setJMenuBar(menuBar);
 	}
 	
-	public void buildPanel() {
+	public JTable getVersionTable() {
+		return this.versionTable;
+	}
+	
+	public void addKeyBinding() {
+		Action action = new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				GUI.this.updateVersion();
+				//GUI.this.currentVersionLabel.setText(CURRVERTEXT + MCVersionSwap.getCurrentVersion() + "</center></html>");
+			}
+		};
+		versionTable.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "JTable_enter");
+		
+		versionTable.getInputMap(JTable.WHEN_FOCUSED).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "JTable_enter");
+		versionTable.getActionMap().put("JTable_enter", action);
+	}
+	
+	private void buildPanel() {
 		versionTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		versionTable.setSize(new Dimension(100, 100));
 		versionTable.setFillsViewportHeight(true);
 		versionTableScroll = new JScrollPane(versionTable);
-		
-		
-		
 		
 		mainPanel.setLayout(new BorderLayout());
 		labelPanel.setLayout(new FlowLayout());
@@ -121,7 +131,11 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		
 		labelPanel.add(currentVersionLabel);
 		controlPanel.add(versionTableScroll, BorderLayout.CENTER);
+		controlPanel.add(new JLabel("   "), BorderLayout.WEST);
+		controlPanel.add(new JLabel("   "), BorderLayout.EAST);
 		buttonPanel.add(launchButton, BorderLayout.CENTER);
+		buttonPanel.add(new JLabel(" "), BorderLayout.WEST);
+		buttonPanel.add(new JLabel(" "), BorderLayout.EAST);
 		
 		mainPanel.add(labelPanel, BorderLayout.NORTH);
 		mainPanel.add(controlPanel, BorderLayout.CENTER);
@@ -132,7 +146,12 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		versionTable.addMouseListener(this);
 		versionTable.addKeyListener(this);
 		versionTable.getModel().addTableModelListener(this);
+		this.addWindowListener(this);
 		
+		/*
+		 * Disable the switchButton on launch, so the program doesn't
+		 * change to the same version.
+		 */
 		if(versionTableValue.equals(MCVersionSwap.getCurrentVersion())) {
 			switchButton.setEnabled(false);
 		}
@@ -141,17 +160,9 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		this.setVisible(true);
 	}
 	
-	public void buildJarFileChooser() {
-		jarFileChooser = new JFileChooser("Choose jar file...");
-		jarFileChooser.setCurrentDirectory(new File("/Users/kyleschattler/Desktop/jarfiles"));
-		jarFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		jarFileChooser.setFileFilter(new FileNameExtensionFilter("jar files", "jar"));
-		jarFileChooser.setMultiSelectionEnabled(true);
-	}
-	
-	public void buildMacFileChooser() {
-		macFileChooser = new FileDialog(this, "Chooser jar file...");
-		macFileChooser.setDirectory("/Users/kyleschattler/Desktop/jarfiles");
+	private void buildJarFileChooser() {
+		jarFileChooser = new FileDialog(this, "Choose a jar file...");
+		//macFileChooser.setDirectory("/Users/kyleschattler/Desktop/jarfiles");
 		
 		class jarFilter implements FilenameFilter {
             public boolean accept(File dir, String name) {
@@ -159,9 +170,52 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
             }
         };
 		
-		macFileChooser.setFilenameFilter(new jarFilter());
+        jarFileChooser.setFilenameFilter(new jarFilter());
 	}
 	
+	private void buildPopupMenu() {
+		versionMenu = new JPopupMenu();
+		renameItem = new JMenuItem("Rename File");
+		deleteItem = new JMenuItem("Delete File");
+		
+		versionMenu.add(renameItem);
+		versionMenu.add(deleteItem);
+		
+		renameItem.addActionListener(this);
+		deleteItem.addActionListener(this);
+	}
+	
+	public void setCurrentVersionLabel(String text) {
+		this.currentVersionLabel.setText(CURRVERTEXT+text+"</center></html>");
+	}
+	
+	public void addEntityToTable(Entity e) {
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		vtm.addEntity(e);
+	}
+	
+	public void replaceEntityToTable(Entity e) {
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		vtm.replaceEntity(e);
+	}
+	
+	public void removeEntityFromTable(int row) {
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		String version = (String)vtm.getValueAt(row, 1);
+		if(MCVersionSwap.getCurrentVersion().equals(version)) {
+			JOptionPane.showMessageDialog(this, version + " is the current version, please change versions before deleting.");
+		}
+		else {
+			MCVersionSwap.deleteEntityFile((String) version);
+			vtm.removeEntity((Entity) vtm.getObjectAtRow(row));
+		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 * ActionListener functions for buttons, and menuItems
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -174,7 +228,7 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		}
 		
 		if(e.getSource().equals(exitItem)) {
-			System.exit(0);
+			MCVersionSwap.closeProgram();
 		}
 		
 		if(e.getSource().equals(aboutItem)) {
@@ -183,92 +237,139 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		}
 		
 		if(e.getSource().equals(addJarItem)) {
-			if(MCVersionSwap.getOS().equals(OS.windows)) {
-				int opt = jarFileChooser.showOpenDialog(this);
-				
-				if(opt==JFileChooser.APPROVE_OPTION) {
-					File[] temp = jarFileChooser.getSelectedFiles();
-					ArrayList<Directory> tempD = new ArrayList<Directory>();
-					for(int i=0; i<temp.length; i++) {
-						tempD.add(new Directory(temp[i]));
-					}
-					
-					new AddJarDialog(this, tempD);
-				}
-				
-				if(opt==JFileChooser.ERROR_OPTION) {
-					System.out.println("A");
+			jarFileChooser.setVisible(true);
+			if(jarFileChooser.getFile()!=null) {
+				ArrayList<Entity> tempD = new ArrayList<Entity>();
+				tempD.add(new Entity(jarFileChooser.getFile(), jarFileChooser.getDirectory()));
+				new AddJarDialog(this, tempD);
+			}
+		}
+		
+		if(e.getSource().equals(renameItem)) {
+			//TODO: Check for .jar, if it's present leave it alone. Else, append it.
+			String value = JOptionPane.showInputDialog(this, "Enter new name:", "Rename File", JOptionPane.QUESTION_MESSAGE);
+			if(value!=null || !(value.equals(""))) {
+				VersionTableModel vtm = (VersionTableModel)versionTable.getModel();
+				vtm.setValueAt(value, versionTable.getSelectedRow(), 0);
+				try {
+					MCVersionSwap.writeEntityFile(value, (String)vtm.getValueAt(versionTable.getSelectedRow(), 1));
+				} catch (IOException ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
 				}
 			}
+		}
+		
+		if(e.getSource().equals(deleteItem)) {
+			this.removeEntityFromTable(versionTable.getSelectedRow());
+		}
+		
+		if(e.getSource().equals(reportBugItem)) {
+			new BugDialog(this);
+		}
+	}
+	
+	public void updateVersion() {
+		if(!MCVersionSwap.getCurrentVersion().equals(versionTable.getValueAt(versionTable.getSelectedRow(), 1))) {
+			int res = JOptionPane.showConfirmDialog(this, "Are you sure you want to change to this version?");
 			
-			if(MCVersionSwap.getOS().equals(OS.mac)) {
-				macFileChooser.setVisible(true);
-				if(!macFileChooser.getFile().equals(null)) {
-					new AddJarDialog(this, new ArrayList<Directory>());
-				}
+			if(res==JOptionPane.YES_OPTION) {
+				versionTableValue = (String)versionTable.getValueAt(versionTable.getSelectedRow(), 1);
+				String sourceDir = "/"+versionTableValue+"/"+versionTable.getValueAt(versionTable.getSelectedRow(), 0);
 				
+				try {
+					MCVersionSwap.moveFile(new File(MCVersionSwap.getPath()+sourceDir), 
+							new File(MCVersionSwap.getPath()+"/../minecraft.jar"));
+					
+					MCVersionSwap.updateCurrentVersion(versionTableValue);
+					currentVersionLabel.setText(CURRVERTEXT + MCVersionSwap.getCurrentVersion() + "</center></html>");
+				} 
+				catch (IOException ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
-
+	
 	@Override
 	public void tableChanged(TableModelEvent e) {
 		int row = e.getFirstRow();
-		int colum = e.getColumn();
+		int column = e.getColumn();
 		TableModel model = (TableModel)e.getSource();
-		String columnName = model.getColumnName(colum);
-		Object data = model.getValueAt(row, colum);
-		System.out.println(row);
+		//String columnName = model.getColumnName(column);
+		Object data = model.getValueAt(row, column);
+		System.out.println(row + " " + column);
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		if(e.getSource().equals(versionTable) && e.getButton()==MouseEvent.BUTTON3) {
-			System.out.println("B");
-		}
-	}
+	public void mouseClicked(MouseEvent e) { }
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseEntered(MouseEvent e) { }
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseExited(MouseEvent e) { }
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(e.getSource().equals(versionTable) && e.getClickCount()==2) {
+		if(e.getSource().equals(versionTable) && e.getClickCount()==2 && e.getButton()==MouseEvent.BUTTON1) {
 			
 			if(!MCVersionSwap.getCurrentVersion().equals(versionTable.getValueAt(versionTable.getSelectedRow(), 1))) {
 				int res = JOptionPane.showConfirmDialog(this, "Are you sure you want to change to this version?");
 				
 				if(res==JOptionPane.YES_OPTION) {
 					versionTableValue = (String)versionTable.getValueAt(versionTable.getSelectedRow(), 1);
+					String sourceDir = "/"+versionTableValue+"/"+versionTable.getValueAt(versionTable.getSelectedRow(), 0);
 					
 					try {
-						MCVersionSwap.moveFile(new File(MCVersionSwap.getPath()+"/"+versionTableValue+"/minecraft.jar"), 
+						MCVersionSwap.moveFile(new File(MCVersionSwap.getPath()+sourceDir), 
 								new File(MCVersionSwap.getPath()+"/../minecraft.jar"));
 						
-						mcSwap.updateCurrentVersion(versionTableValue);
+						MCVersionSwap.updateCurrentVersion(versionTableValue);
 						currentVersionLabel.setText(CURRVERTEXT + MCVersionSwap.getCurrentVersion() + "</center></html>");
 					} 
 					catch (IOException ex) {
 						ex.printStackTrace();
 					}
 				}
+				if(res==JOptionPane.NO_OPTION) { }
 			}
+		}
+		
+		if(e.getSource().equals(versionTable) && e.getButton()==MouseEvent.BUTTON3) {
+			int r = versionTable.rowAtPoint(e.getPoint());
+            if (r >= 0 && r < versionTable.getRowCount()) {
+            	versionTable.setRowSelectionInterval(r, r);
+            } else {
+            	versionTable.clearSelection();
+            }
+            
+            int rowindex = versionTable.getSelectedRow();
+            if (rowindex < 0)
+                return;
+            if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+                versionMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
+		if(e.getSource().equals(versionTable) && e.getButton()==MouseEvent.BUTTON3) {
+			int r = versionTable.rowAtPoint(e.getPoint());
+            if (r >= 0 && r < versionTable.getRowCount()) {
+            	versionTable.setRowSelectionInterval(r, r);
+            } else {
+            	versionTable.clearSelection();
+            }
+
+            int rowindex = versionTable.getSelectedRow();
+            if (rowindex < 0)
+                return;
+            if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+                versionMenu.show(e.getComponent(), e.getX(), e.getY());
+            }
+		}
 	}
 
 	@Override
@@ -296,7 +397,7 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 						MCVersionSwap.moveFile(new File(MCVersionSwap.getPath()+"/"+versionTableValue+"/minecraft.jar"), 
 								new File(MCVersionSwap.getPath()+"/../minecraft.jar"));
 						
-						mcSwap.updateCurrentVersion(versionTableValue);
+						MCVersionSwap.updateCurrentVersion(versionTableValue);
 						currentVersionLabel.setText(CURRVERTEXT + MCVersionSwap.getCurrentVersion() + "</center></html>");
 					} 
 					catch (IOException ex) {
@@ -305,5 +406,43 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 				}
 			}
 		}
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) { }
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		MCVersionSwap.closeProgram();
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

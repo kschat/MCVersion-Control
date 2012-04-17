@@ -1,39 +1,49 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class AddJarDialog extends JDialog implements ActionListener {
+public class AddJarDialog extends JDialog implements ActionListener, DocumentListener {
 	private final int WIDTH=300;
-	private final int HEIGHT=300;
+	private final int HEIGHT=200;
 	private JPanel mainPanel, controlPanel, buttonPanel;
 	private JList listView;
 	private JLabel nameLabel, versionLabel;
 	private JTextField nameText;
 	private JComboBox versionComboBox;
 	private JButton submit, cancel;
+	private JCheckBox setAsCurrentVersion;
+	private GUI root;
 	
-	public AddJarDialog(GUI root, ArrayList<Directory> list) {
+	public AddJarDialog(GUI root, ArrayList<Entity> list) {
 		super(root, "Add a jar");
 		
+		this.root = root;
 		mainPanel = new JPanel();
 		controlPanel = new JPanel();
 		buttonPanel = new JPanel();
-		nameLabel = new JLabel("Label for jar:");
+		nameLabel = new JLabel("Label for file:");
 		versionLabel = new JLabel("jar version:");
 		nameText = new JTextField();
 		submit = new JButton("Submit");
 		cancel = new JButton("Cancel");
+		setAsCurrentVersion = new JCheckBox("Set as current version");
+		submit.setEnabled(false);
 		versionComboBox = new JComboBox(MCVersionSwap.getMCVersions().toArray());
 		
 		nameText.setPreferredSize(new Dimension(100, 20));
 		versionComboBox.setPreferredSize(new Dimension(100, 25));
 		
 		listView = new JList(list.toArray());
+		listView.setCellRenderer(new JarRenderer());
 		listView.setPreferredSize(new Dimension(125, HEIGHT));
 		listView.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		listView.setSelectedIndex(0);
 		
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(new Dimension(WIDTH, HEIGHT));
@@ -53,8 +63,9 @@ public class AddJarDialog extends JDialog implements ActionListener {
 		controlPanel.add(nameText);
 		controlPanel.add(versionLabel);
 		controlPanel.add(versionComboBox);
-		buttonPanel.add(submit, BorderLayout.WEST);
-		buttonPanel.add(cancel, BorderLayout.EAST);
+		controlPanel.add(setAsCurrentVersion);
+		buttonPanel.add(cancel, BorderLayout.WEST);
+		buttonPanel.add(submit, BorderLayout.EAST);
 		
 		mainPanel.add(listView, BorderLayout.WEST);
 		mainPanel.add(controlPanel, BorderLayout.CENTER);
@@ -62,19 +73,99 @@ public class AddJarDialog extends JDialog implements ActionListener {
 		
 		submit.addActionListener(this);
 		cancel.addActionListener(this);
+		nameText.addActionListener(this);
+		nameText.getDocument().addDocumentListener(this);
 		
 		this.add(mainPanel);
 		this.setVisible(true);
 	}
+	
+	private void submitEntity(Entity entity, File file, boolean replace) throws IOException {
+		MCVersionSwap.moveFile(new File(entity.getDirectory()+entity.getName()), 
+				new File(file.toString()+"/"+this.nameText.getText()+".jar"));
+		
+		entity.setName(this.nameText.getText()+".jar");
+		MCVersionSwap.writeEntityFile(entity.getName(), file.getName());
+		
+		if(setAsCurrentVersion.isSelected()) {
+			//TODO: should fix updateCurrentVersion to also update text field
+			MCVersionSwap.updateCurrentVersion(file.getName());
+			this.root.setCurrentVersionLabel(file.getName());
+		}
+		
+		if(replace) {
+			this.root.replaceEntityToTable(new Entity(entity));
+		}
+		else {
+			this.root.addEntityToTable(new Entity(entity));
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		if(e.getSource().equals(submit)) {
-			
+			try {
+				File f = new File(MCVersionSwap.getPath() + "/" + this.versionComboBox.getSelectedItem().toString());
+				Entity entity = new Entity((Entity)this.listView.getSelectedValue());
+				entity.setVersion(f.getName());
+				
+				if(!f.mkdir()) {
+					int opt=JOptionPane.showConfirmDialog(this, "This version of minecraft already exists, do you want to overwrite it?");
+					
+					if(opt==JOptionPane.YES_OPTION) {
+						this.submitEntity(entity, f, true);
+						this.dispose();
+					}
+					
+					if(opt==JOptionPane.NO_OPTION) {
+						
+					}
+				}
+				else {
+					this.submitEntity(entity, f, false);
+					this.dispose();
+				}
+			} 
+			catch (IOException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
+				
 		}
 		
 		if(e.getSource().equals(cancel)) {
-			
+			this.dispose();
+		}
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) { 
+		if(this.nameText.getText().length()==0) {
+			this.submit.setEnabled(false);
+		}
+		else {
+			this.submit.setEnabled(true);
+		}
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) { 
+		if(this.nameText.getText().length()==0) {
+			this.submit.setEnabled(false);
+		}
+		else {
+			this.submit.setEnabled(true);
+		}
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		if(this.nameText.getText().length()==0) {
+			this.submit.setEnabled(false);
+		}
+		else {
+			this.submit.setEnabled(true);
 		}
 	}
 }

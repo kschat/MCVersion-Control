@@ -1,19 +1,28 @@
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.*;
 import java.nio.channels.FileChannel;
 
+import javax.swing.UIManager;
+
+import com.alee.laf.WebLookAndFeel;
+
 public class MCVersionSwap {
+	private static MCVersionSwap INSTANCE = null;
 	private File fileBrowser;
-	private BufferedWriter fileWriter;
+	private static BufferedWriter fileWriter;
 	private static BufferedReader fileReader;
 	private static String filePath, currVer;
-	private static ArrayList<Entity> entities;
+	private static Vector<Entity> entities;
 	private static OS os;
 	private static ArrayList<String> mcVersions;
 	
-	public MCVersionSwap() throws IOException {
+	private MCVersionSwap() throws IOException {
+		MCVersionSwap.setRunningStatus(true);
+		
 		File[] files;
-		entities = new ArrayList<Entity>();
+		entities = new Vector<Entity>();
 		currVer = this.readCurrentVersion();
 		mcVersions = readVersions();
 		
@@ -24,7 +33,6 @@ public class MCVersionSwap {
 		else if(System.getProperty("os.name").equals("Windows 7")) {
 			os=OS.windows;
 			fileBrowser = new File(System.getenv("APPDATA") + "/.minecraft/bin/versions");
-			System.out.println(fileBrowser.getPath());
 		}
 		
 		filePath = fileBrowser.getPath();
@@ -34,8 +42,59 @@ public class MCVersionSwap {
 			if(files[i].isDirectory()) {
 				fileReader = new BufferedReader(new FileReader(files[i]+"/entity.txt"));
 				String[] temp = fileReader.readLine().split(",");
-				entities.add(new Entity(temp[0], temp[1], new Directory(files[i].getPath(), files[i].getName())));
+				entities.add(new Entity(temp[0], temp[1], files[i].getPath()));
 			}
+		}
+		
+		fileReader.close();
+	}
+	
+	/*
+	 * Method to get instance of MCVersionSwap. 
+	 * MCVersionSwap is a singleton class.
+	 */
+	public static MCVersionSwap getInstance() throws IOException {
+		if(INSTANCE == null) {
+			INSTANCE = new MCVersionSwap();
+		}
+		return INSTANCE;
+	}
+	
+	public static void firstTimeRunning() {
+		
+	}
+	
+	
+	/*
+	 * TODO: use to switch over to new way of detecting files.
+	 */
+	public String matchFile(String file) {
+		String temp="";
+		Pattern pattern = Pattern.compile("/[0-9]{1}\\.[0-9]{1}(\\.[0-9]){0,1}/.*\\.jar$");
+		Matcher match = pattern.matcher(file);
+		
+		while(match.find()) {
+			temp = match.group();
+		}
+		
+		return temp;
+	}
+	
+	private static boolean checkIfRunning() throws IOException {
+		File file = new File(MCVersionSwap.class.getResource("data").getPath()+"/isRunning.txt");
+		if(file.exists()) {
+			return true;
+		}
+		return false;
+	}
+	
+	private static void setRunningStatus(boolean running) throws IOException {
+		File file = new File(MCVersionSwap.class.getResource("data").getPath()+"/isRunning.txt");
+		if(running) {
+			file.createNewFile();
+		}
+		else {
+			file.delete();
 		}
 	}
 	
@@ -43,20 +102,8 @@ public class MCVersionSwap {
 		return entities.toArray();
 	}
 	
-	public String[][] get2DArray() {
-		String[][] temp = new String[entities.size()][2];
-		for(int i=0; i<entities.size(); i++) {
-			for(int x=0; x<2; x++) {
-				if(x==0) {
-					temp[i][x]=entities.get(i).getName();
-				}
-				else {
-					temp[i][x]=entities.get(i).getVersion();
-				}
-			}
-		}
-		
-		return temp;
+	public static Vector<Entity> getEntities() {
+		return entities;
 	}
 	
 	public static void moveFile(File sourceFile, File destFile) throws IOException {
@@ -94,10 +141,10 @@ public class MCVersionSwap {
 	/*
 	 * Updates the current version text file with the value passed in ver
 	 */
-	public void updateCurrentVersion(String ver) throws IOException {
+	public static void updateCurrentVersion(String ver) throws IOException {
 		fileWriter=null;
 		try {
-			fileWriter = new BufferedWriter(new FileWriter(this.getClass().getResource("currentVer.txt").getPath()));
+			fileWriter = new BufferedWriter(new FileWriter(MCVersionSwap.class.getResource("currentVer.txt").getPath()));
 			fileWriter.write(ver);
 			fileWriter.flush();
 			currVer=ver;
@@ -187,6 +234,61 @@ public class MCVersionSwap {
 		return ver;
 	}
 	
+	public static void writeEntityFile(String name, String ver) throws IOException {
+		fileWriter = null;
+		
+		try {
+			File temp = new File(getPath()+"/"+ver+"/entity.txt");
+			if(!temp.exists()) {
+				temp.createNewFile();
+			}
+			fileWriter = new BufferedWriter(new FileWriter(MCVersionSwap.getPath()+"/"+ver+"/entity.txt"));
+			fileWriter.write(name+",");
+			fileWriter.write(ver);
+			fileWriter.flush();
+		}
+		finally {
+			fileWriter.close();
+		}
+	}
+	
+	public static void deleteEntityFile(String ver) {
+		File folder = new File(MCVersionSwap.buildPath(ver));
+		
+		File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	        	System.out.println(f.getPath());
+	            f.delete();
+	        }
+	    }
+	    folder.delete();
+	}
+	
+	public static void updateEntityFile(String ver) {
+		File folder = new File(MCVersionSwap.buildPath(ver));
+		
+		File[] files = folder.listFiles();
+	    if(files!=null) { //some JVMs return null for empty dirs
+	        for(File f: files) {
+	        	System.out.println(f.getPath());
+	            f.delete();
+	        }
+	    }
+	    folder.delete();
+	}
+	
+	/*
+	 * TODO: Implement buildPath method where applicable
+	 */
+	public static String buildPath(String ver, String fName) {
+		return MCVersionSwap.getPath()+"/"+ver+"/"+fName;
+	}
+	
+	public static String buildPath(String ver) {
+		return MCVersionSwap.getPath()+"/"+ver+"/";
+	}
+	
 	/*
 	 * returns a new ArrayList with the values in mcVersions
 	 */
@@ -194,7 +296,36 @@ public class MCVersionSwap {
 		return new ArrayList<String>(mcVersions);
 	}
 	
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+	
+	public static void closeProgram() {
+		try {
+			MCVersionSwap.setRunningStatus(false);
+		} catch (IOException e) {
+			File file = new File("");
+			file.renameTo(new File(MCVersionSwap.class.getResource("isRunning.error.txt").getPath()));
+		}
+		finally {
+			System.exit(0);
+		}
+	}
+	
 	public static void main(String[] args) {
+		try {
+			if(MCVersionSwap.checkIfRunning()) {
+				System.exit(0);
+			}
+		} catch (IOException e) { }
+		
+		try {
+			UIManager.setLookAndFeel(WebLookAndFeel.class.getCanonicalName ());
+		}
+		catch(Throwable e) {
+			
+		}
+		
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Minecraft Swap");
 		new GUI();

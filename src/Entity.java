@@ -1,17 +1,20 @@
 public class Entity {
 	private String name;
 	private String version;
-	private Directory directory;
+	private String directory;
 	
-	public Entity(String n, String v, Directory d) {
-		this(n, v);
-		directory = new Directory(d);
-	}
-	
-	public Entity(String n, String v) {
+	public Entity(String n, String v, String d) {
 		this.name = n;
 		this.version = v;
-		directory = new Directory("", "");
+		directory = d;
+	}
+	
+	public Entity(String n, String d) {
+		this(n, "", d);
+	}
+	
+	public Entity(Entity e) {
+		this(e.getName(), e.getVersion(), e.getDirectory());
 	}
 	
 	public void setName(String n) {
@@ -30,15 +33,27 @@ public class Entity {
 		return this.version;
 	}
 	
-	public void setDirectory(Directory d) {
-		this.directory = new Directory(d);
+	public void setDirectory(String d) {
+		this.directory = d;
 	}
 	
-	public Directory getDirectory() {
-		return new Directory(this.directory);
+	public String getDirectory() {
+		return this.directory;
 	}
 	
+	@Override
 	public String toString() {
-		return this.getName() + this.getVersion();
+		return this.getName() + " " + this.getVersion() + " " + this.getDirectory();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Entity) {
+			Entity e = (Entity)o;
+			if(this.getVersion().equals(e.getVersion())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

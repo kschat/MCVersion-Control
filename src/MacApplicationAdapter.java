@@ -1,3 +1,4 @@
+/*
 import javax.swing.*;
 import javax.swing.JOptionPane;
 import com.apple.eawt.Application;
@@ -20,3 +21,4 @@ public class MacApplicationAdapter extends Application {
 		});
 	}
 }
+*/
