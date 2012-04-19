@@ -57,4 +57,5 @@ public class FileManager implements Singleton<FileManager> {
 	public void setBasePath(String bPath) {
 		basePath = bPath;
 	}
+	
 }
