@@ -327,7 +327,7 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 	
 	public static void main(String[] args) {
 		try {
-			UIManager.setLookAndFeel(WebLookAndFeel.class.getCanonicalName ());
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
 		catch(Throwable e) {
 			

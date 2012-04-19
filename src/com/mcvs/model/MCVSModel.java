@@ -1,14 +1,14 @@
 package com.mcvs.model;
 import com.mcvs.core.*;
 
-public class MCVSModel implements Singleton {
+public class MCVSModel {
 	private static MCVSModel INSTANCE = null;
 	
 	private MCVSModel() {
 		
 	}
 	
-	public MCVSModel getInstance() {
+	public static MCVSModel getInstance() {
 		if(INSTANCE==null) {
 			INSTANCE = new MCVSModel();
 		}

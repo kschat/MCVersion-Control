@@ -1,3 +1,4 @@
+package com.mcvs.core;
 
 public class UpdateManager {
 	

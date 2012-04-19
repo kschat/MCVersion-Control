@@ -178,8 +178,4 @@ public class MCVSView extends AbstractWindow {
 	public void addViewWindowListener(WindowListener wListener) {
 		this.addWindowListener(wListener);
 	}
-	
-	public static void main(String[] args) {
-		new MCVSView("Title", 650, 450);
-	}
 }

@@ -12,7 +12,7 @@ public class Installer {
 	private MCVersionSwap mcvs;
 	
 	private Installer(OS os) throws IOException {
-		mcvs = MCVersionSwap.getInstance();
+		//mcvs = MCVersionSwap.getInstance();
 		this.os = os;
 		
 		switch(os) {

@@ -1,4 +1,4 @@
-package com.mcvs.model;
+package com.mcvs.core;
 
 public class Entity {
 	private String name;
