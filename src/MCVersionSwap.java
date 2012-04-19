@@ -1,11 +1,11 @@
+//package com.mcvs.core;
+
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 import java.nio.channels.FileChannel;
-
 import javax.swing.UIManager;
-
 import com.alee.laf.WebLookAndFeel;
 
 public class MCVersionSwap {

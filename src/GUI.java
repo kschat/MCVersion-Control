@@ -8,7 +8,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-
 public class GUI extends JFrame implements ActionListener, TableModelListener, MouseListener, KeyListener, WindowListener {
 	private final int HEIGHT=450;
 	private final int WIDTH=650;
@@ -300,7 +299,7 @@ public class GUI extends JFrame implements ActionListener, TableModelListener, M
 		Object data = model.getValueAt(row, column);
 		System.out.println(row + " " + column);
 	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) { }
 
