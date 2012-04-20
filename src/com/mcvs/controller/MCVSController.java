@@ -16,6 +16,7 @@ public class MCVSController {
 		model = m;
 		
 		view.addLaunchButtonListener(new LaunchButtonListener());
+		view.addExitListener(new ExitListener());
 	}
 	
 	public static MCVSController getInstance(MCVSView v, MCVSModel m) {
@@ -27,16 +28,16 @@ public class MCVSController {
 	}
 	
 	class LaunchButtonListener implements ActionListener {
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
-				try {
-					Runtime.getRuntime().exec(new String[] {"C:\\Users\\Kyle\\Desktop\\Games\\Minecraft.exe"});
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+			model.launchMinecraft();
 		}
-		
+	}
+	
+	class ExitListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+		}
 	}
 }

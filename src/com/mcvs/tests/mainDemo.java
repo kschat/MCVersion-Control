@@ -1,8 +1,7 @@
 package com.mcvs.tests;
 
 import javax.swing.*;
-
-import com.mcvs.controller.MCVSController;
+import com.mcvs.controller.*;
 import com.mcvs.model.*;
 import com.mcvs.view.*;
 
@@ -24,6 +23,7 @@ public class mainDemo {
 			e.printStackTrace();
 		}
 		
+		System.out.println("A");
 		MCVSView view = new MCVSView("Title", 650, 450);
 		MCVSModel model = MCVSModel.getInstance();
 		MCVSController controller = MCVSController.getInstance(view, model);

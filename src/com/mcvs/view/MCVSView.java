@@ -5,7 +5,7 @@ import java.io.*;
 import javax.swing.*;
 
 public class MCVSView extends AbstractWindow {
-	private final String CURRVERTEXT="<html><b>Current Version:</b><br /><center>";
+	private final String CURRVERTEXT="<html><b>Current Version adsf asdf :</b><br /><center>";
 	private JPanel controlPanel, labelPanel, buttonPanel;
 	private JLabel currentVersionLabel;
 	private JTable versionTable;
@@ -76,16 +76,11 @@ public class MCVSView extends AbstractWindow {
 	@Override
 	protected void buildMenu(JMenuBar menu) {
 		
-		/*
-		if(MCVersionSwap.getOS().equals(OS.windows)) {
-			fileMenu.add(exitItem);
-			helpMenu.add(aboutItem);
-		}
-		*/
-		
 		fileMenu.add(addJarItem);
+		fileMenu.add(exitItem);
 		helpMenu.add(updateItem);
 		helpMenu.add(reportBugItem);
+		helpMenu.add(aboutItem);
 		
 		menu.add(fileMenu);
 		menu.add(editMenu);

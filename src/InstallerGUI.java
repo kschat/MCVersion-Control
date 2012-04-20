@@ -325,6 +325,7 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		}
 	}
 	
+	/*
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -339,7 +340,7 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	@Override
 	public void changedUpdate(DocumentEvent e) {

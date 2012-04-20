@@ -4,6 +4,7 @@ import com.mcvs.core.*;
 import java.io.*;
 
 public class tester {
+	/*
 	public static void main(String[] args) {
 		FileManager fm = FileManager.getInstance();
 		File file = new File(System.getProperty("user.home")+"/Desktop/test.txt");
@@ -23,7 +24,7 @@ public class tester {
 			}
 			
 			FileManager.deleteDirectory(dir, true);
-			/*
+			
 			
 			if(FileManager.createFile(file)) {
 				FileManager.writeToFile(file, "ASDFASDFASDF");
@@ -74,10 +75,10 @@ public class tester {
 			else {
 				System.out.println("Filled directory wasn't deleted");
 			}
-			*/
+			
 		//}
 		//catch (IOException e) {
 			//e.printStackTrace();
 		//}
-	}
+	}*/
 }

@@ -92,6 +92,11 @@ public class FileManager {
 		return false;
 	}
 	
+	/*
+	 * Checks if directory doesn't already exist, then makes the file and 
+	 * returns true if all went well. Returns false if the file directory
+	 * already exists.
+	 */
 	public static boolean createDirectory(File dir) {
 		if(!dir.exists()) {
 			dir.mkdir();
@@ -127,6 +132,37 @@ public class FileManager {
 		}
 	}
 	
+	/*
+	 * Method used to move a file from sourceFile to destFile
+	 */
+	public static void moveFile(File sourceFile, File destFile) throws IOException {
+		FileChannel source = null;
+		FileChannel destination = null;
+		
+		try {
+			source = new FileInputStream(sourceFile).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			
+			long count = 0;
+			long size = source.size();
+			source.transferTo(count, size, destination);
+		}
+		finally {
+			if(source!=null) {
+				source.close();
+			}
+			
+			if(destination!=null) {
+				destination.close();
+			}
+		}
+	}
+	
+	/*
+	 * Checks if file exists, if it doesn't return null. If it does
+	 * reads each line from the file and returns an Array of Strings,
+	 * each index being 1 line from the file. 
+	 */
 	public static String[] readLinesFromFile(File filename) throws IOException {
 		BufferedReader reader = null;
 		//TODO: Convert to stringbuilder

@@ -311,7 +311,7 @@ public class MCVersionSwap {
 			System.exit(0);
 		}
 	}
-	
+	/*
 	public static void main(String[] args) {
 		try {
 			if(MCVersionSwap.checkIfRunning()) {
@@ -319,15 +319,10 @@ public class MCVersionSwap {
 			}
 		} catch (IOException e) { }
 		
-		try {
-			UIManager.setLookAndFeel(WebLookAndFeel.class.getCanonicalName ());
-		}
-		catch(Throwable e) {
-			
-		}
+		
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Minecraft Swap");
 		new GUI();
-	}
+	}*/
 }
