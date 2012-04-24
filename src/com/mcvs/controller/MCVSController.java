@@ -24,9 +24,10 @@ public class MCVSController {
 		
 		/*
 		 * Gets the views JTable and sets the model with the data gathered from
-		 * the getEntites method
+		 * the getEntites method. Sets the current version label as well.
 		 */
 		view.getVersionTable().setModel(new VersionTableModel(model.getEntities()));
+		view.setCurrentVersionLabel(model.readCurrentVersion());
 		
 		//Add action listeners to the views controls
 		view.addLaunchButtonListener(new LaunchButtonListener());

@@ -106,7 +106,7 @@ public class MCVSView extends AbstractWindow {
 		versionTable = new JTable();
 		
 		//TODO Pass real value to label
-		currentVersionLabel = new JLabel(CURRVERTEXT + "1.2</center></html>");
+		currentVersionLabel = new JLabel();
 		launchButton = new JButton("Launch minecraft");
 		
 		//TODO: Pass list to jarDialog
@@ -160,6 +160,10 @@ public class MCVSView extends AbstractWindow {
 	
 	public JTable getVersionTable() {
 		return versionTable;
+	}
+	
+	public void setCurrentVersionLabel(String val) {
+		currentVersionLabel.setText(CURRVERTEXT+"\n" + val + "</center></html>");
 	}
 	
 	public void addLaunchButtonListener(ActionListener aListener) {

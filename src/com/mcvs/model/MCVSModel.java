@@ -61,7 +61,25 @@ public class MCVSModel {
 			ex.printStackTrace();
 		}
 		
-		System.out.println(entities);
 		return entities;
+	}
+	
+	/*
+	 * Method used to read the current version set for minecraft to run
+	 * Returns the version if all went well, null if an exception is thrown
+	 */
+	public String readCurrentVersion() {
+		String[] temp;
+		try {
+			temp = FileManager.readLinesFromFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()));
+			System.out.println(temp[0]);
+		} 
+		catch (IOException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+			return null;
+		}
+		
+		return temp[0];
 	}
 }
