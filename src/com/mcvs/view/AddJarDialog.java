@@ -105,6 +105,10 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 		}*/
 	}
 	
+	public JComboBox getVersionComboBox() {
+		return versionComboBox;
+	}
+	
 	public void addSubmitButtonListener(ActionListener aListener) {
 		submit.addActionListener(aListener);
 	}

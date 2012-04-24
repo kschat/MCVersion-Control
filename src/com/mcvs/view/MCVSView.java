@@ -74,7 +74,7 @@ public class MCVSView extends AbstractWindow {
 		*/
 		
 		this.add(panel);
-		this.setVisible(true);
+		//this.setVisible(true);
 	}
 
 	@Override

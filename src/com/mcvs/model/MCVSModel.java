@@ -14,7 +14,6 @@ public class MCVSModel {
 	private MCVSModel() {
 		platformManager = PlatformManager.getInstance();
 		fileManager = FileManager.getInstance(platformManager.getHomeDirectory());
-		System.out.println(platformManager.getHomeDirectory());
 	}
 	
 	public static MCVSModel getInstance() {
@@ -45,7 +44,7 @@ public class MCVSModel {
 	 */
 	public Vector<Entity> getEntities() {
 		Vector<Entity> entities = new Vector<Entity>();
-		File[] files = new File(platformManager.getMinecraftDirectory()+"/versions").listFiles();
+		File[] files = new File(platformManager.getDataDirectory()+"/versions").listFiles();
 		
 		try {
 			for(int i=0; i<files.length; i++) {
@@ -72,7 +71,6 @@ public class MCVSModel {
 		String[] temp;
 		try {
 			temp = FileManager.readLinesFromFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()));
-			System.out.println(temp[0]);
 		} 
 		catch (IOException ex) {
 			// TODO Auto-generated catch block
@@ -81,5 +79,23 @@ public class MCVSModel {
 		}
 		
 		return temp[0];
+	}
+	
+	/*
+	 * Gets every minecraft version released
+	 * Returns null if error occurred, otherwise returns a String array
+	 */
+	public String[] getAllMCVersions() {
+		String[] temp;
+		try {
+			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"/comboBoxVers"));
+			
+			return temp;
+		} 
+		catch (IOException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+			return null;
+		}
 	}
 }

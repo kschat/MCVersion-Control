@@ -6,8 +6,9 @@ public class MacManager extends PlatformManager {
 	private MacManager() { 
 		super();
 		homeDirectory = System.getProperty("user.home");
-		minecraftDirectory = homeDirectory + "/Library/Application Support/minecraft/";
+		minecraftDirectory = homeDirectory + "/Library/Application Support/minecraft/bin";
 		minecraftRunDirectory = "/Applications/Minecraft/Minecraft.app";
+		dataDirectory = this.getClass().getResource("/data").getPath();
 	}
 	
 	public static MacManager getInstance() {
@@ -31,5 +32,10 @@ public class MacManager extends PlatformManager {
 	@Override
 	public String[] getMinecraftRunDirectory() {
 		return new String[] {"Open", minecraftRunDirectory};
+	}
+	
+	@Override
+	public String getDataDirectory() {
+		return dataDirectory;
 	}
 }

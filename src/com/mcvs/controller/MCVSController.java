@@ -29,6 +29,14 @@ public class MCVSController {
 		view.getVersionTable().setModel(new VersionTableModel(model.getEntities()));
 		view.setCurrentVersionLabel(model.readCurrentVersion());
 		
+		/*
+		 * Gets the views reference to the add jar dialog object and sets its 
+		 * combo box model to a new VersionComboBoxModel. The VersionComboBoxModel
+		 * is passed an array of strings returned by the getAllMCVersions function
+		 * in the MCVSModel class.
+		 */
+		view.getAddJarDialog().getVersionComboBox().setModel(new VersionComboBoxModel(model.getAllMCVersions()));
+		
 		//Add action listeners to the views controls
 		view.addLaunchButtonListener(new LaunchButtonListener());
 		view.addJarItemListener(new AddJarListener());
@@ -39,6 +47,11 @@ public class MCVSController {
 		//Add action listeners to the add jar dialog controls
 		view.getAddJarDialog().addSubmitButtonListener(new AddJarSubmitButtonListener());
 		view.getAddJarDialog().addCancelButtonListener(new AddJarCancelButtonListener());
+		
+		/*
+		 * Once everything is built, display the GUI
+		 */
+		view.setVisible(true);
 	}
 	
 	public static MCVSController getInstance(MCVSView v, MCVSModel m) {

@@ -64,7 +64,7 @@ public class VersionTableModel extends AbstractTableModel {
 	public String getColumnName(int col) {
 		return this.columns[col];
 	}
-
+	
 	@Override
 	public int getRowCount() {
 		return this.tableContent.size();
