@@ -8,6 +8,7 @@ public class WindowsManager extends PlatformManager {
 		homeDirectory = System.getProperty("user.home");
 		minecraftDirectory = System.getenv("APPDATA") + "\\.minecraft\\bin\\";
 		minecraftRunDirectory = "C:\\Users\\Kyle\\Desktop\\Games\\Minecraft.exe";
+		dataDirectory = this.getClass().getResource("/data").getPath();
 	}
 	
 	public static WindowsManager getInstance() {
@@ -20,20 +21,22 @@ public class WindowsManager extends PlatformManager {
 
 	@Override
 	public String getHomeDirectory() {
-		// TODO Auto-generated method stub
 		return homeDirectory;
 	}
 
 	@Override
 	public String getMinecraftDirectory() {
-		// TODO Auto-generated method stub
 		return minecraftDirectory;
 	}
 
 	@Override
 	public String[] getMinecraftRunDirectory() {
-		// TODO Auto-generated method stub
 		return new String[] {minecraftRunDirectory};
+	}
+
+	@Override
+	public String getDataDirectory() {
+		return dataDirectory;
 	}
 	
 }

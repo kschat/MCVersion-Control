@@ -4,6 +4,7 @@ import com.mcvs.core.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+
 import javax.swing.*;
 
 public class MCVSView extends AbstractWindow {
@@ -32,8 +33,34 @@ public class MCVSView extends AbstractWindow {
 		this.initComponents();
 		this.buildMenu(mainMenu);
 		this.buildPanel(mainPanel);
+		this.buildJarFileChooser();
 	}
-
+	
+	@Override
+	protected void initComponents() {
+		labelPanel = new JPanel();
+		controlPanel = new JPanel();
+		buttonPanel = new JPanel();
+		versionTable = new JTable();
+		
+		//TODO Pass real value to label
+		currentVersionLabel = new JLabel();
+		launchButton = new JButton("Launch minecraft");
+		
+		//TODO: Pass list to jarDialog
+		jarDialog = new AddJarDialog(this, null);
+		bugDialog = new BugDialog(this);
+		
+		fileMenu = new JMenu("File");
+		editMenu = new JMenu("Edit");
+		helpMenu = new JMenu("Help");
+		exitItem = new JMenuItem("Exit");
+		updateItem = new JMenuItem("Check For Updates");
+		aboutItem = new JMenuItem("About");
+		addJarItem = new JMenuItem("Add Jar...");
+		reportBugItem = new JMenuItem("Report a bug");
+	}
+	
 	@Override
 	public void buildPanel(JPanel panel) {
 		versionTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -97,33 +124,7 @@ public class MCVSView extends AbstractWindow {
 		*/
 		this.setJMenuBar(menu);
 	}
-
-	@Override
-	protected void initComponents() {
-		labelPanel = new JPanel();
-		controlPanel = new JPanel();
-		buttonPanel = new JPanel();
-		versionTable = new JTable();
-		
-		//TODO Pass real value to label
-		currentVersionLabel = new JLabel();
-		launchButton = new JButton("Launch minecraft");
-		
-		//TODO: Pass list to jarDialog
-		jarDialog = new AddJarDialog(this, null);
-		bugDialog = new BugDialog(this);
-		
-		fileMenu = new JMenu("File");
-		editMenu = new JMenu("Edit");
-		helpMenu = new JMenu("Help");
-		exitItem = new JMenuItem("Exit");
-		updateItem = new JMenuItem("Check For Updates");
-		aboutItem = new JMenuItem("About");
-		addJarItem = new JMenuItem("Add Jar...");
-		reportBugItem = new JMenuItem("Report a bug");
-	}
 	
-	//TODO Make visible to controller
 	private void buildJarFileChooser() {
 		jarFileChooser = new FileDialog(this, "Choose a jar file...");
 		//macFileChooser.setDirectory("/Users/kyleschattler/Desktop/jarfiles");
@@ -160,6 +161,10 @@ public class MCVSView extends AbstractWindow {
 	
 	public JTable getVersionTable() {
 		return versionTable;
+	}
+	
+	public FileDialog getFileChooser() {
+		return jarFileChooser;
 	}
 	
 	public void setCurrentVersionLabel(String val) {

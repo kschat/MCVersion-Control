@@ -105,6 +105,10 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 		}*/
 	}
 	
+	public void setListViewData(ArrayList<Entity> list) {
+		listView.setModel(new FileListModel(list));
+	}
+	
 	public JComboBox getVersionComboBox() {
 		return versionComboBox;
 	}

@@ -86,16 +86,29 @@ public class MCVSModel {
 	 * Returns null if error occurred, otherwise returns a String array
 	 */
 	public String[] getAllMCVersions() {
-		String[] temp;
+		String[] temp = null;
 		try {
 			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"/comboBoxVers"));
-			
-			return temp;
 		} 
 		catch (IOException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
-			return null;
 		}
+		
+		return temp;
+	}
+	
+	public String getMCVSVersion() {
+		String[] temp = null;
+		try {
+			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"/MCVSver"));
+			
+		} 
+		catch (IOException ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+		
+		return temp[0];
 	}
 }

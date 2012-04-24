@@ -15,6 +15,9 @@ public class mainDemo {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Minecraft Version Control");
 		
+		/*
+		 * Sets the look and feel to the current systems default look and feel
+		 */
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}
@@ -23,6 +26,10 @@ public class mainDemo {
 		catch (InstantiationException ex) {ex.printStackTrace();} 
 		catch (IllegalAccessException ex) {ex.printStackTrace();}
 		
+		/*
+		 * Builds the main components to run Minecraft Version Control with
+		 * a GUI.
+		 */
 		MCVSView view = new MCVSView("Minecraft Version Control", 650, 450);
 		MCVSModel model = MCVSModel.getInstance();
 		MCVSController controller = MCVSController.getInstance(view, model);

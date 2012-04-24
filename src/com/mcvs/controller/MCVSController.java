@@ -1,10 +1,10 @@
 package com.mcvs.controller;
 
 import java.awt.event.*;
-import java.io.IOException;
-
-import javax.swing.JOptionPane;
-
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import java.awt.*;
 import com.mcvs.view.*;
 import com.mcvs.core.*;
 import com.mcvs.model.*;
@@ -92,15 +92,25 @@ public class MCVSController {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showMessageDialog(view, "Program: Minecraft Controller Switcher\nCreated by: Kyle Schattler\nVersion: v0.2a", 
-					"About", JOptionPane.PLAIN_MESSAGE);
+			JOptionPane.showMessageDialog(view, "Program: Minecraft Controller Switcher\nCreated by: Kyle Schattler\nVersion: " +
+					model.getMCVSVersion(), "About", JOptionPane.PLAIN_MESSAGE);
 		}
 	}
 	
 	class AddJarListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			view.getAddJarDialog().setVisible(true);
+			FileDialog fileDialog = view.getFileChooser();
+			fileDialog.setVisible(true);
+			
+			if(fileDialog.getFile()!=null) {
+				AddJarDialog jarDialog = view.getAddJarDialog();
+				ArrayList<Entity> temp = new ArrayList<Entity>();
+				
+				temp.add(new Entity(fileDialog.getFile(), fileDialog.getDirectory()));
+				jarDialog.setListViewData(temp);
+				jarDialog.setVisible(true);
+			}
 		}
 	}
 	
