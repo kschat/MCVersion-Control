@@ -10,6 +10,7 @@ public class MCVSModel {
 	private static MCVSModel INSTANCE = null;
 	private FileManager fileManager;
 	private PlatformManager platformManager;
+	private String currentVersion = null;
 	
 	private MCVSModel() {
 		platformManager = PlatformManager.getInstance();
@@ -23,7 +24,10 @@ public class MCVSModel {
 		
 		return INSTANCE;
 	}
-	
+	/*
+	 * TODO Remove try statements from Model, replace with throws and handle
+	 * the exception in the Controller.
+	 */
 	public void launchMinecraft() {
 		try {
 			Runtime.getRuntime().exec(platformManager.getMinecraftRunDirectory());
@@ -41,6 +45,9 @@ public class MCVSModel {
 	/*
 	 * Method used to return a list of entities read from each entity file in the
 	 * versions directory.
+	 * 
+	 * TODO Remove try statements from Model, replace with throws and handle
+	 * the exception in the Controller.
 	 */
 	public Vector<Entity> getEntities() {
 		Vector<Entity> entities = new Vector<Entity>();
@@ -64,26 +71,50 @@ public class MCVSModel {
 	}
 	
 	/*
-	 * Method used to read the current version set for minecraft to run
-	 * Returns the version if all went well, null if an exception is thrown
+	 * Method used to get the current Minecraft version. If the read boolean is
+	 * true then the method will read the version saved in the currentVer file and
+	 * return the value; else just return the value in currentVersion
+	 * 
+	 * TODO Remove try statements from Model, replace with throws and handle
+	 * the exception in the Controller.
 	 */
-	public String readCurrentVersion() {
-		String[] temp;
-		try {
-			temp = FileManager.readLinesFromFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()));
-		} 
-		catch (IOException ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-			return null;
+	public String getCurrentVersion(boolean read) {
+		if(read) {
+			String[] temp;
+			try {
+				temp = FileManager.readLinesFromFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()));
+				currentVersion = temp[0];
+			} 
+			catch (IOException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
 		}
 		
-		return temp[0];
+		return currentVersion;
+	}
+	
+	/*
+	 * TODO Remove try statements from Model, replace with throws and handle
+	 * the exception in the Controller.
+	 */
+	public void updateCurrentVersion(String ver) {
+		try {
+			FileManager.writeToFile(new File(this.getClass().getResource("currentVer.txt").getPath()), ver);
+			currentVersion = ver;
+		}
+		catch (IOException ex) {
+			//TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
 	}
 	
 	/*
 	 * Gets every minecraft version released
-	 * Returns null if error occurred, otherwise returns a String array
+	 * Returns null if error occurred, otherwise returns a String array.
+	 * 
+	 * TODO Remove try statements from Model, replace with throws and handle
+	 * the exception in the Controller.
 	 */
 	public String[] getAllMCVersions() {
 		String[] temp = null;
@@ -98,6 +129,10 @@ public class MCVSModel {
 		return temp;
 	}
 	
+	/*
+	 * TODO Remove try statements from Model, replace with throws and handle
+	 * the exception in the Controller.
+	 */
 	public String getMCVSVersion() {
 		String[] temp = null;
 		try {
@@ -110,5 +145,10 @@ public class MCVSModel {
 		}
 		
 		return temp[0];
+	}
+	
+	public void moveVersion(String version) throws IOException {
+		FileManager.moveFile(new File(platformManager.getDataDirectory()+"/versions/"+version+"/"),
+				new File(platformManager.getMinecraftDirectory()+"minecraft.jar"));
 	}
 }

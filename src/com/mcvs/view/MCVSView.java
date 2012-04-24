@@ -34,6 +34,7 @@ public class MCVSView extends AbstractWindow {
 		this.buildMenu(mainMenu);
 		this.buildPanel(mainPanel);
 		this.buildJarFileChooser();
+		this.buildPopupMenu();
 	}
 	
 	@Override
@@ -165,6 +166,10 @@ public class MCVSView extends AbstractWindow {
 	
 	public FileDialog getFileChooser() {
 		return jarFileChooser;
+	}
+	
+	public void showPopupMenu(Component c, int x, int y) {
+		versionMenu.show(c, x, y);
 	}
 	
 	public void setCurrentVersionLabel(String val) {
