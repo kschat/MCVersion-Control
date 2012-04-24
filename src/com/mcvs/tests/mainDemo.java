@@ -23,7 +23,6 @@ public class mainDemo {
 			e.printStackTrace();
 		}
 		
-		System.out.println("A");
 		MCVSView view = new MCVSView("Title", 650, 450);
 		MCVSModel model = MCVSModel.getInstance();
 		MCVSController controller = MCVSController.getInstance(view, model);

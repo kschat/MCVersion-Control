@@ -1,11 +1,13 @@
 package com.mcvs.view;
+
+import com.mcvs.core.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 
 public class MCVSView extends AbstractWindow {
-	private final String CURRVERTEXT="<html><b>Current Version adsf asdf :</b><br /><center>";
+	private final String CURRVERTEXT="<html><b>Current Version:</b><br /><center>";
 	private JPanel controlPanel, labelPanel, buttonPanel;
 	private JLabel currentVersionLabel;
 	private JTable versionTable;
@@ -14,6 +16,7 @@ public class MCVSView extends AbstractWindow {
 	private FileDialog jarFileChooser;
 	//private String versionTableValue="";
 	private JPopupMenu versionMenu;
+	private AddJarDialog jarDialog;
 	
 	private JMenu fileMenu, editMenu, helpMenu;
 	private JMenuItem exitItem, aboutItem, updateItem, addJarItem, renameItem, deleteItem, reportBugItem;
@@ -102,6 +105,7 @@ public class MCVSView extends AbstractWindow {
 		versionTable = new JTable();
 		currentVersionLabel = new JLabel(CURRVERTEXT + "1.2</center></html>");
 		launchButton = new JButton("Launch minecraft");
+		jarDialog = new AddJarDialog(this, null);
 		
 		fileMenu = new JMenu("File");
 		editMenu = new JMenu("Edit");
@@ -136,6 +140,10 @@ public class MCVSView extends AbstractWindow {
 		
 		//renameItem.addActionListener(this);
 		//deleteItem.addActionListener(this);
+	}
+	
+	public AddJarDialog getAddJarDialog() {
+		return jarDialog;
 	}
 	
 	public void addLaunchButtonListener(ActionListener aListener) {

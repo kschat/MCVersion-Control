@@ -25,11 +25,11 @@ public class MCVSModel {
 	
 	public void launchMinecraft() {
 		try {
-			Runtime.getRuntime().exec(new String[] {"C:\\Users\\Kyle\\Desktop\\Games\\Minecraft.exe"});
+			Runtime.getRuntime().exec(new String[] {"open", platformManager.getMinecraftRunDirectory()});
 		} 
-		catch (IOException e1) {
+		catch (IOException ex) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			ex.printStackTrace();
 		}
 	}
 	

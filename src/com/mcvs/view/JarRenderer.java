@@ -1,3 +1,6 @@
+package com.mcvs.view;
+
+import com.mcvs.core.*;
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;

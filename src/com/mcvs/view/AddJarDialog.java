@@ -1,14 +1,14 @@
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+package com.mcvs.view;
 
-public class AddJarDialog extends JDialog implements ActionListener, DocumentListener {
+import com.mcvs.core.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+
+public class AddJarDialog extends JDialog implements DocumentListener {
 	private final int WIDTH=300;
 	private final int HEIGHT=200;
 	private JPanel mainPanel, controlPanel, buttonPanel;
@@ -18,9 +18,9 @@ public class AddJarDialog extends JDialog implements ActionListener, DocumentLis
 	private JComboBox versionComboBox;
 	private JButton submit, cancel;
 	private JCheckBox setAsCurrentVersion;
-	private GUI root;
+	private MCVSView root;
 	
-	public AddJarDialog(GUI root, ArrayList<Entity> list) {
+	public AddJarDialog(MCVSView root, ArrayList<Entity> list) {
 		super(root, "Add a jar");
 		
 		this.root = root;
@@ -34,12 +34,12 @@ public class AddJarDialog extends JDialog implements ActionListener, DocumentLis
 		cancel = new JButton("Cancel");
 		setAsCurrentVersion = new JCheckBox("Set as current version");
 		submit.setEnabled(false);
-		versionComboBox = new JComboBox(MCVersionSwap.getMCVersions().toArray());
+		versionComboBox = new JComboBox(/*MCVersionSwap.getMCVersions().toArray()*/);
 		
 		nameText.setPreferredSize(new Dimension(100, 20));
 		versionComboBox.setPreferredSize(new Dimension(100, 25));
 		
-		listView = new JList(list.toArray());
+		listView = new JList(/*list.toArray()*/);
 		listView.setCellRenderer(new JarRenderer());
 		listView.setPreferredSize(new Dimension(125, HEIGHT));
 		listView.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -71,16 +71,19 @@ public class AddJarDialog extends JDialog implements ActionListener, DocumentLis
 		mainPanel.add(controlPanel, BorderLayout.CENTER);
 		mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
+		/*
 		submit.addActionListener(this);
 		cancel.addActionListener(this);
 		nameText.addActionListener(this);
 		nameText.getDocument().addDocumentListener(this);
+		*/
 		
 		this.add(mainPanel);
-		this.setVisible(true);
+		//this.setVisible(true);
 	}
 	
 	private void submitEntity(Entity entity, File file, boolean replace) throws IOException {
+		/*
 		MCVersionSwap.moveFile(new File(entity.getDirectory()+entity.getName()), 
 				new File(file.toString()+"/"+this.nameText.getText()+".jar"));
 		
@@ -98,9 +101,18 @@ public class AddJarDialog extends JDialog implements ActionListener, DocumentLis
 		}
 		else {
 			this.root.addEntityToTable(new Entity(entity));
-		}
+		}*/
 	}
-
+	
+	public void addSubmitButtonListener(ActionListener aListener) {
+		submit.addActionListener(aListener);
+	}
+	
+	public void addCancelButtonListener(ActionListener aListener) {
+		cancel.addActionListener(aListener);
+	}
+	
+	/*
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
@@ -138,7 +150,7 @@ public class AddJarDialog extends JDialog implements ActionListener, DocumentLis
 			this.dispose();
 		}
 	}
-
+	*/
 	@Override
 	public void changedUpdate(DocumentEvent e) { 
 		if(this.nameText.getText().length()==0) {

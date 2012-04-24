@@ -8,5 +8,23 @@ public class WindowsManager extends PlatformManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getHomeDirectory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getMinecraftDirectory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getMinecraftRunDirectory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }
