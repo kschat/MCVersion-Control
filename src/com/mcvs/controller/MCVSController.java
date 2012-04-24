@@ -2,6 +2,9 @@ package com.mcvs.controller;
 
 import java.awt.event.*;
 import java.io.IOException;
+
+import javax.swing.JOptionPane;
+
 import com.mcvs.view.*;
 import com.mcvs.core.*;
 import com.mcvs.model.*;
@@ -19,10 +22,20 @@ public class MCVSController {
 		view = v;
 		model = m;
 		
+		/*
+		 * Gets the views JTable and sets the model with the data gathered from
+		 * the getEntites method
+		 */
+		view.getVersionTable().setModel(new VersionTableModel(model.getEntities()));
+		
 		//Add action listeners to the views controls
 		view.addLaunchButtonListener(new LaunchButtonListener());
 		view.addJarItemListener(new AddJarListener());
 		view.addExitListener(new ExitListener());
+		view.addReportBugItemListener(new ReportBugListener());
+		view.addAboutItemListener(new AboutListener());
+		
+		//Add action listeners to the add jar dialog controls
 		view.getAddJarDialog().addSubmitButtonListener(new AddJarSubmitButtonListener());
 		view.getAddJarDialog().addCancelButtonListener(new AddJarCancelButtonListener());
 	}
@@ -51,6 +64,22 @@ public class MCVSController {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			model.closeMCVS();
+		}
+	}
+	
+	class ReportBugListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			view.getBugDialog().setVisible(true);
+		}
+	}
+	
+	class AboutListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(view, "Program: Minecraft Controller Switcher\nCreated by: Kyle Schattler\nVersion: v0.2a", 
+					"About", JOptionPane.PLAIN_MESSAGE);
 		}
 	}
 	

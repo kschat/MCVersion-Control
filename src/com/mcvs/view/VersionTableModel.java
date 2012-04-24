@@ -1,5 +1,8 @@
+package com.mcvs.view;
+
 import java.util.*;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.table.*;
+import com.mcvs.core.*;
 
 public class VersionTableModel extends AbstractTableModel {
 	private static final int COLUMN_FILE_NAME = 0;

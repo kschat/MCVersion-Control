@@ -22,12 +22,12 @@ public abstract class PlatformManager {
 		if(System.getProperty("os.name").equals("Windows 7")) {
 			return WindowsManager.getInstance();
 		}
-		//TODO: Detect Linux
+		//TODO: Detect Linux and more specific versions of Windows and OS X
 		
 		return null;
 	}
 	
 	abstract public String getHomeDirectory();
 	abstract public String getMinecraftDirectory();
-	abstract public String getMinecraftRunDirectory();
+	abstract public String[] getMinecraftRunDirectory();
 }

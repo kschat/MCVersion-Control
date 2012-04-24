@@ -17,6 +17,7 @@ public class MCVSView extends AbstractWindow {
 	//private String versionTableValue="";
 	private JPopupMenu versionMenu;
 	private AddJarDialog jarDialog;
+	private BugDialog bugDialog;
 	
 	private JMenu fileMenu, editMenu, helpMenu;
 	private JMenuItem exitItem, aboutItem, updateItem, addJarItem, renameItem, deleteItem, reportBugItem;
@@ -103,9 +104,14 @@ public class MCVSView extends AbstractWindow {
 		controlPanel = new JPanel();
 		buttonPanel = new JPanel();
 		versionTable = new JTable();
+		
+		//TODO Pass real value to label
 		currentVersionLabel = new JLabel(CURRVERTEXT + "1.2</center></html>");
 		launchButton = new JButton("Launch minecraft");
+		
+		//TODO: Pass list to jarDialog
 		jarDialog = new AddJarDialog(this, null);
+		bugDialog = new BugDialog(this);
 		
 		fileMenu = new JMenu("File");
 		editMenu = new JMenu("Edit");
@@ -117,6 +123,7 @@ public class MCVSView extends AbstractWindow {
 		reportBugItem = new JMenuItem("Report a bug");
 	}
 	
+	//TODO Make visible to controller
 	private void buildJarFileChooser() {
 		jarFileChooser = new FileDialog(this, "Choose a jar file...");
 		//macFileChooser.setDirectory("/Users/kyleschattler/Desktop/jarfiles");
@@ -130,6 +137,7 @@ public class MCVSView extends AbstractWindow {
         jarFileChooser.setFilenameFilter(new jarFilter());
 	}
 	
+	//TODO Make visible to controller
 	private void buildPopupMenu() {
 		versionMenu = new JPopupMenu();
 		renameItem = new JMenuItem("Rename File");
@@ -144,6 +152,14 @@ public class MCVSView extends AbstractWindow {
 	
 	public AddJarDialog getAddJarDialog() {
 		return jarDialog;
+	}
+	
+	public BugDialog getBugDialog() {
+		return bugDialog;
+	}
+	
+	public JTable getVersionTable() {
+		return versionTable;
 	}
 	
 	public void addLaunchButtonListener(ActionListener aListener) {

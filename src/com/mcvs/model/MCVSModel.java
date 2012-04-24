@@ -1,6 +1,8 @@
 package com.mcvs.model;
 
-import java.io.IOException;
+import java.util.*;
+import java.io.*;
+
 import com.mcvs.core.*;
 import com.mcvs.core.platformManager.*;
 
@@ -25,7 +27,7 @@ public class MCVSModel {
 	
 	public void launchMinecraft() {
 		try {
-			Runtime.getRuntime().exec(new String[] {"open", platformManager.getMinecraftRunDirectory()});
+			Runtime.getRuntime().exec(platformManager.getMinecraftRunDirectory());
 		} 
 		catch (IOException ex) {
 			// TODO Auto-generated catch block
@@ -35,5 +37,31 @@ public class MCVSModel {
 	
 	public void closeMCVS() {
 		System.exit(0);
+	}
+	
+	/*
+	 * Method used to return a list of entities read from each entity file in the
+	 * versions directory.
+	 */
+	public Vector<Entity> getEntities() {
+		Vector<Entity> entities = new Vector<Entity>();
+		File[] files = new File(platformManager.getMinecraftDirectory()+"/versions").listFiles();
+		
+		try {
+			for(int i=0; i<files.length; i++) {
+				if(files[i].isDirectory()) {
+					String[] temp;
+					temp = FileManager.readLinesFromFile(new File(files[i]+"/entity.txt"));
+					entities.add(new Entity(temp[0], temp[1], files[i].getPath()));
+				}
+			}
+		}
+		catch (IOException ex) {
+			//TODO Add handler and error reporter
+			ex.printStackTrace();
+		}
+		
+		System.out.println(entities);
+		return entities;
 	}
 }

@@ -23,7 +23,7 @@ public class mainDemo {
 			e.printStackTrace();
 		}
 		
-		MCVSView view = new MCVSView("Title", 650, 450);
+		MCVSView view = new MCVSView("Minecraft Version Control", 650, 450);
 		MCVSModel model = MCVSModel.getInstance();
 		MCVSController controller = MCVSController.getInstance(view, model);
 	}

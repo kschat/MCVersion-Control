@@ -1,30 +1,39 @@
 package com.mcvs.core.platformManager;
 
 public class WindowsManager extends PlatformManager {
+	private static WindowsManager INSTANCE = null;
 	
-	private WindowsManager() { }
+	private WindowsManager() { 
+		super();
+		homeDirectory = System.getProperty("user.home");
+		minecraftDirectory = System.getenv("APPDATA") + "\\.minecraft\\bin\\";
+		minecraftRunDirectory = "C:\\Users\\Kyle\\Desktop\\Games\\Minecraft.exe";
+	}
 	
 	public static WindowsManager getInstance() {
-		// TODO Auto-generated method stub
-		return null;
+		if(INSTANCE==null) {
+			INSTANCE = new WindowsManager();
+		}
+		
+		return INSTANCE;
 	}
 
 	@Override
 	public String getHomeDirectory() {
 		// TODO Auto-generated method stub
-		return null;
+		return homeDirectory;
 	}
 
 	@Override
 	public String getMinecraftDirectory() {
 		// TODO Auto-generated method stub
-		return null;
+		return minecraftDirectory;
 	}
 
 	@Override
-	public String getMinecraftRunDirectory() {
+	public String[] getMinecraftRunDirectory() {
 		// TODO Auto-generated method stub
-		return null;
+		return new String[] {minecraftRunDirectory};
 	}
 	
 }

@@ -1,24 +1,23 @@
+package com.mcvs.view;
+
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
+import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.event.*;
 
-
+//TODO: Port to work on the new program pattern
 public class BugDialog extends JDialog implements ActionListener, DocumentListener {
 	private final int WIDTH=400;
 	private final int HEIGHT=300;
 	private final String[] bugTypes = new String[]{"Windows 7", "Windows XP", "OS X 10.5+", "Linux", "Other"};
-	private GUI root;
+	private MCVSView root;
 	private JPanel mainPanel, buttonPanel, errorTypePanel, messagePanel;
 	private JComboBox errorTypeCB;
 	private JTextArea messageTA;
 	private JButton submit, cancel;
 	private JLabel errorTypeLabel, messageLabel;
 	
-	public BugDialog(GUI root) {
+	public BugDialog(MCVSView root) {
 		super(root, "Report a bug");
 		this.root = root;
 		
@@ -71,7 +70,7 @@ public class BugDialog extends JDialog implements ActionListener, DocumentListen
 		messageTA.getDocument().addDocumentListener(this);
 		
 		this.add(mainPanel);
-		this.setVisible(true);
+		//this.setVisible(true);
 	}
 
 	@Override

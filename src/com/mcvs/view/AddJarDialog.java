@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
+//TODO: Finish porting for new application pattern
 public class AddJarDialog extends JDialog implements DocumentListener {
 	private final int WIDTH=300;
 	private final int HEIGHT=200;

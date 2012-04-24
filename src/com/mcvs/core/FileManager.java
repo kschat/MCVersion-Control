@@ -175,16 +175,18 @@ public class FileManager {
 		
 		try {
 			reader = new BufferedReader(new FileReader(filename));
+			temp = reader.readLine();
 			
-			while((temp = reader.readLine() + ",") != null) {
-				lines += temp + ",";
+			while(temp != null) {
+				lines += temp + "\n";
+				temp = reader.readLine();
 			}
 		}
 		finally {
-			
+			reader.close();
 		}
 		
-		return lines.split(",");
+		return lines.split("\n");
 	}
 	
 	/*

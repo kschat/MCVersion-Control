@@ -29,7 +29,7 @@ public class MacManager extends PlatformManager {
 	}
 
 	@Override
-	public String getMinecraftRunDirectory() {
-		return minecraftRunDirectory;
+	public String[] getMinecraftRunDirectory() {
+		return new String[] {"Open", minecraftRunDirectory};
 	}
 }
