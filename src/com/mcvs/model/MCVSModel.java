@@ -100,7 +100,7 @@ public class MCVSModel {
 	 */
 	public void updateCurrentVersion(String ver) {
 		try {
-			FileManager.writeToFile(new File(this.getClass().getResource("currentVer.txt").getPath()), ver);
+			FileManager.writeToFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()), ver);
 			currentVersion = ver;
 		}
 		catch (IOException ex) {
@@ -147,8 +147,8 @@ public class MCVSModel {
 		return temp[0];
 	}
 	
-	public void moveVersion(String version) throws IOException {
-		FileManager.moveFile(new File(platformManager.getDataDirectory()+"/versions/"+version+"/"),
+	public void moveVersion(String version, String filename) throws IOException {
+		FileManager.moveFile(new File(platformManager.getDataDirectory()+"/versions/"+version+"/"+filename),
 				new File(platformManager.getMinecraftDirectory()+"minecraft.jar"));
 	}
 }

@@ -154,7 +154,22 @@ public class MCVSController {
 							" change to this version?", "Change version", JOptionPane.YES_NO_OPTION);
 					
 					if(opt == JOptionPane.YES_OPTION) {
-						model.moveVersion(tempTable.getValueAt(tempTable.getSelectedRow(), 0));
+						String tempVer = (String) tempTable.getValueAt(tempTable.getSelectedRow(), 1);
+						String tempName = (String) tempTable.getValueAt(tempTable.getSelectedRow(), 0);
+						try {
+							model.moveVersion(tempVer, tempName);
+						}
+						catch (FileNotFoundException ex) {
+							JOptionPane.showConfirmDialog(view, "Something went wrong when moving the " +
+									"Minecraft jar file. Hit okay to send error to developer.", "Error", JOptionPane.WARNING_MESSAGE);
+						}
+						catch (IOException ex) {
+							// TODO Auto-generated catch block
+							ex.printStackTrace();
+						}
+						
+						model.updateCurrentVersion(tempVer);
+						view.setCurrentVersionLabel(tempVer);
 					}
 				}
 			}
