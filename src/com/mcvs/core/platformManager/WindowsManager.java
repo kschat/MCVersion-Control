@@ -9,6 +9,7 @@ public class WindowsManager extends PlatformManager {
 		minecraftDirectory = System.getenv("APPDATA") + "\\.minecraft\\bin\\";
 		minecraftRunDirectory = "C:\\Users\\Kyle\\Desktop\\Games\\Minecraft.exe";
 		dataDirectory = this.getClass().getResource("/data").getPath();
+		versionsDirectory = dataDirectory + "\\versions\\";
 	}
 	
 	public static WindowsManager getInstance() {
@@ -37,6 +38,11 @@ public class WindowsManager extends PlatformManager {
 	@Override
 	public String getDataDirectory() {
 		return dataDirectory;
+	}
+
+	@Override
+	public String getVersionsDirectory() {
+		return versionsDirectory;
 	}
 	
 }

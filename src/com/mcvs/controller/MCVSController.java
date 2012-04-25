@@ -45,6 +45,7 @@ public class MCVSController {
 		view.addReportBugItemListener(new ReportBugListener());
 		view.addAboutItemListener(new AboutListener());
 		view.addVersionTableListener(new VersionTableMouseListener());
+		view.addRenameItemListener(new RenameItemListener());
 		
 		//Add action listeners to the add jar dialog controls
 		view.getAddJarDialog().addSubmitButtonListener(new AddJarSubmitButtonListener());
@@ -146,14 +147,20 @@ public class MCVSController {
 			if(e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
 				JTable tempTable = view.getVersionTable();
 				
-				/*Makes sure the current version saved in the model doesn't match with the current version
+				/* 
+				 * Makes sure the current version saved in the model doesn't match with the current version
 				 * being displayed by the view.
 				 */
 				if(!model.getCurrentVersion(false).equals(tempTable.getValueAt(tempTable.getSelectedRow(), 1))) {
+					
+					//Prompts the user to make sure they really meant to switch versions
 					int opt = JOptionPane.showConfirmDialog(view, "Are you sure you want to" +
 							" change to this version?", "Change version", JOptionPane.YES_NO_OPTION);
 					
+					//If they click the yes button
 					if(opt == JOptionPane.YES_OPTION) {
+						
+						//Store temp values for the version and filename of the selected row 
 						String tempVer = (String) tempTable.getValueAt(tempTable.getSelectedRow(), 1);
 						String tempName = (String) tempTable.getValueAt(tempTable.getSelectedRow(), 0);
 						try {
@@ -168,6 +175,10 @@ public class MCVSController {
 							ex.printStackTrace();
 						}
 						
+						/*
+						 * Updates the currentVer text file and sets the current version label
+						 * to the selected value
+						 */
 						model.updateCurrentVersion(tempVer);
 						view.setCurrentVersionLabel(tempVer);
 					}
@@ -177,23 +188,47 @@ public class MCVSController {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			//Checks of the right mouse button was released
 			if(e.getButton() == MouseEvent.BUTTON3) {
+				/*
+				 * Stores a temp reference of the views JTable and gets the row
+				 * that contains the point at e.getPoint
+				 */
 				JTable temp = view.getVersionTable();
 				int r = temp.rowAtPoint(e.getPoint());
 				
+				/*
+				 * Makes sure the value of r is within the bounds of the tables rows
+				 * if it is set that row as the selected row; else clear the current
+				 * selected row.
+				 */
 				if (r >= 0 && r < temp.getRowCount()) {
 					temp.setRowSelectionInterval(r, r);
 				} else {
 					temp.clearSelection();
 				}
 	            
+				/*
+				 * Get the row index by getting the selected row, if that index is
+				 * less than 0, return out of the function.
+				 */
 	            int rowindex = temp.getSelectedRow();
-	            if (rowindex < 0)
+	            if (rowindex < 0) {
 	                return;
+	            }
+	            
+	            //Display the popup menu at the clicked point
 	            if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
 	                view.showPopupMenu(e.getComponent(), e.getX(), e.getY());
 	            }
 			}
+		}
+	}
+	
+	class RenameItemListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			JOptionPane.showInputDialog(view, "Enter new name for file:", "New name");
 		}
 	}
 }

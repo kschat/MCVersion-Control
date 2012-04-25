@@ -2,13 +2,12 @@ package com.mcvs.model;
 
 import java.util.*;
 import java.io.*;
-
 import com.mcvs.core.*;
 import com.mcvs.core.platformManager.*;
 
 public class MCVSModel {
 	private static MCVSModel INSTANCE = null;
-	private FileManager fileManager;
+	private FileManager fileManager;	//TODO Decide if fileManager should be static class
 	private PlatformManager platformManager;
 	private String currentVersion = null;
 	
@@ -95,6 +94,9 @@ public class MCVSModel {
 	}
 	
 	/*
+	 * Updates the currentVer text file with the version value
+	 * passed in by ver
+	 * 
 	 * TODO Remove try statements from Model, replace with throws and handle
 	 * the exception in the Controller.
 	 */
@@ -130,6 +132,9 @@ public class MCVSModel {
 	}
 	
 	/*
+	 * Reads the Minecraft Version Control version number from the 
+	 * MCVSver text file
+	 * 
 	 * TODO Remove try statements from Model, replace with throws and handle
 	 * the exception in the Controller.
 	 */
@@ -147,8 +152,21 @@ public class MCVSModel {
 		return temp[0];
 	}
 	
+	/*
+	 * Moves the file in the directory built by version and filename to the active
+	 * Minecraft directory.
+	 * 
+	 * TODO Implement more efficient method of storing files
+	 */
 	public void moveVersion(String version, String filename) throws IOException {
 		FileManager.moveFile(new File(platformManager.getDataDirectory()+"/versions/"+version+"/"+filename),
 				new File(platformManager.getMinecraftDirectory()+"minecraft.jar"));
+	}
+	
+	/*
+	 * Writes the name and version to a entity file
+	 */
+	public void writeEntityFile(String name, String ver) throws IOException {
+		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/"+name), name+"\n"+ver);
 	}
 }
