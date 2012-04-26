@@ -116,7 +116,7 @@ public class FileManager {
 		}
 		
 		byte[] bytes = value.getBytes();
-		ByteBuffer buffer = ByteBuffer.allocate(bytes.length * 4);
+		ByteBuffer buffer = ByteBuffer.allocate(bytes.length);
 		for(int i=0; i<bytes.length; i++) {
 			buffer.put(bytes[i]);
 		}

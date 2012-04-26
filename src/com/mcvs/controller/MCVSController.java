@@ -121,26 +121,35 @@ public class MCVSController {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			AddJarDialog temp = view.getAddJarDialog();
-			Entity entity = temp.getSelectedEntity();
-			int opt = 0;
+			Entity sourceEntity = temp.getSelectedEntity();
+			Entity destEntity = new Entity(temp.getNameText(), (String)temp.getVersion(), "");
+			int opt = -1;
 			
 			if(!model.makeDirectory((String)temp.getVersion())) {
 				opt = JOptionPane.showConfirmDialog(view, "This version of Minecraft already" +
 						" exists, do you want to overwrite it?", "File already exists", JOptionPane.YES_NO_OPTION);
 			}
 			
-			if(opt==JOptionPane.NO_OPTION) 
+			if(opt==JOptionPane.NO_OPTION) {
 				return;
+			}
 			if(opt==JOptionPane.YES_OPTION) {
-				//TODO Delete existing minecraft file
+				boolean deleted = model.deleteVersionFile(destEntity.getVersion());
+				boolean made = model.makeDirectory(destEntity.getVersion());
+				if(!deleted || !made) {
+					JOptionPane.showMessageDialog(view, "Something went wrong when trying to delete the file. Please " +
+							"Try again.");
+				}
 			}
 			try {
-				model.addVersion(entity.getDirectory()+entity.getName(), (String)temp.getVersion(), temp.getNameText());
+				model.addVersion(sourceEntity, destEntity);
 			} 
 			catch (IOException ex) {
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
+				//System.out.println(ex.getMessage());
 			}
+			temp.setVisible(false);
 		}
 	}
 	
@@ -213,6 +222,7 @@ public class MCVSController {
 							model.moveVersion(tempVer, tempName);
 						}
 						catch (FileNotFoundException ex) {
+							ex.printStackTrace();
 							JOptionPane.showConfirmDialog(view, "Something went wrong when moving the " +
 									"Minecraft jar file. Hit okay to send error to developer.", "Error", JOptionPane.WARNING_MESSAGE);
 						}

@@ -159,21 +159,33 @@ public class MCVSModel {
 	 * TODO Implement more efficient method of storing files
 	 */
 	public void moveVersion(String version, String filename) throws IOException {
-		System.out.println(platformManager.getMinecraftDirectory()+"minecraft.jar");
 		FileManager.moveFile(new File(platformManager.getVersionsDirectory()+version+"/"+filename),
 				new File(platformManager.getMinecraftDirectory()+"minecraft.jar"));
 	}
 	
-	public void addVersion(String source, String dest, String filename) throws IOException {
-		FileManager.moveFile(new File(source),
-				new File(platformManager.getVersionsDirectory()+dest+"/"+filename));
+	public void addVersion(Entity source, Entity dest) throws IOException {
+		FileManager.moveFile(new File(source.getDirectory()+source.getName()),
+				new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/"+dest.getName()));
+		
+		FileManager.createFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity.txt"));
+		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity.txt"), 
+				dest.getName()+"\n"+dest.getVersion().trim());
 	}
 	
 	public boolean makeDirectory(String path) {
-		System.out.println(platformManager.getVersionsDirectory()+path);
 		boolean created = new File(platformManager.getVersionsDirectory()+path).mkdir();
 		
 		return created;
+	}
+	
+	/*
+	 * Deletes a version file in the data directory. 
+	 * Returns true if the file was deleted, false if something went wrong.
+	 */
+	public boolean deleteVersionFile(String version) {
+		boolean deleted = (FileManager.deleteDirectory(new File(platformManager.getVersionsDirectory()+version), true));
+		
+		return deleted;
 	}
 	
 	/*

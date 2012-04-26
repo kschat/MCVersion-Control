@@ -86,23 +86,7 @@ public class MCVSView extends AbstractWindow {
 		panel.add(controlPanel, BorderLayout.CENTER);
 		panel.add(buttonPanel, BorderLayout.SOUTH);
 		
-		/*
-		switchButton.addActionListener(this);
-		launchButton.addActionListener(this);
-		versionTable.addMouseListener(this);
-		versionTable.addKeyListener(this);
-		versionTable.getModel().addTableModelListener(this);
-		this.addWindowListener(this);
-		
-		 * Disable the switchButton on launch, so the program doesn't
-		 * change to the same version.
-		if(versionTableValue.equals(MCVersionSwap.getCurrentVersion())) {
-			switchButton.setEnabled(false);
-		}
-		*/
-		
 		this.add(panel);
-		//this.setVisible(true);
 	}
 
 	@Override
@@ -117,12 +101,6 @@ public class MCVSView extends AbstractWindow {
 		menu.add(fileMenu);
 		menu.add(editMenu);
 		menu.add(helpMenu);
-		/*
-		exitItem.addActionListener(this);
-		aboutItem.addActionListener(this);
-		addJarItem.addActionListener(this);
-		reportBugItem.addActionListener(this);
-		*/
 		this.setJMenuBar(menu);
 	}
 	
@@ -147,9 +125,6 @@ public class MCVSView extends AbstractWindow {
 		
 		versionMenu.add(renameItem);
 		versionMenu.add(deleteItem);
-		
-		//renameItem.addActionListener(this);
-		//deleteItem.addActionListener(this);
 	}
 	
 	public AddJarDialog getAddJarDialog() {
