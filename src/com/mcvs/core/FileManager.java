@@ -224,7 +224,7 @@ public class FileManager {
 	 * returns false otherwise
 	 */
 	public static boolean deleteFile(File file) {
-		if(file.exists() && file.isFile()) {
+		if(file.isFile()) {
 			if(file.delete()) {
 				return true;
 			}

@@ -2,6 +2,7 @@ package com.mcvs.model;
 
 import java.util.*;
 import java.io.*;
+
 import com.mcvs.core.*;
 import com.mcvs.core.platformManager.*;
 
@@ -183,15 +184,37 @@ public class MCVSModel {
 	 * Returns true if the file was deleted, false if something went wrong.
 	 */
 	public boolean deleteVersionFile(String version) {
-		boolean deleted = (FileManager.deleteDirectory(new File(platformManager.getVersionsDirectory()+version), true));
+		boolean deleted = FileManager.deleteDirectory(new File(platformManager.getVersionsDirectory()+version), true);
 		
 		return deleted;
+	}
+	
+	public boolean deleteJarFile(String filename) {
+		System.out.println(platformManager.getVersionsDirectory()+filename);
+		boolean deleted = FileManager.deleteFile(new File(platformManager.getVersionsDirectory()+filename));
+		return deleted;
+	}
+	
+	public boolean makeFile(String filename) throws IOException {
+		boolean created = new File(platformManager.getVersionsDirectory()+filename).createNewFile();
+		return created;
 	}
 	
 	/*
 	 * Writes the name and version to a entity file
 	 */
 	public void writeEntityFile(String name, String ver) throws IOException {
-		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/"+name), name+"\n"+ver);
+		System.out.println("Name: " + name + "Ver: " + ver);
+		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/entity.txt"), name+"\n"+ver);
+	}
+	
+	public void renameFile(String oldName, String newName) throws IOException {
+		
+		FileManager.moveFile(new File(platformManager.getVersionsDirectory()+oldName),
+				new File(platformManager.getVersionsDirectory()+newName));
+		
+		System.out.println("Old name: " + oldName + " New name: " + newName);
+		boolean delete = this.deleteJarFile(oldName);
+		System.out.println("Delete: " + delete);
 	}
 }

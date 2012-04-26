@@ -4,7 +4,6 @@ import com.mcvs.core.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-
 import javax.swing.*;
 
 public class MCVSView extends AbstractWindow {
@@ -125,6 +124,47 @@ public class MCVSView extends AbstractWindow {
 		
 		versionMenu.add(renameItem);
 		versionMenu.add(deleteItem);
+	}
+	
+	public void addEntityToTable(Entity e) {
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		vtm.addEntity(e);
+	}
+	
+	public void replaceEntityToTable(Entity e) {
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		vtm.replaceEntity(e);
+	}
+	
+	/*
+	 * Renames the value at the current selected row, column 0 to the value passed
+	 * in to the method. Returns a new Entity object that contains the old value
+	 * in the selected row.
+	 */
+	public Entity renameEntityInTable(String value) {
+		//Gets the table model for the version table
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		//Creates a new Entity object to hold the old value of the table.
+		Entity e = new Entity((Entity)vtm.getObjectAtRow(versionTable.getSelectedRow()));
+		
+		vtm.replaceEntity(new Entity(value, e.getVersion(), e.getDirectory()));
+		
+		//Returns the old entity
+		return e;
+	}
+	
+	public String removeEntityFromTable(String currentVersion) {
+		VersionTableModel vtm = (VersionTableModel)this.versionTable.getModel();
+		String version = (String)vtm.getValueAt(versionTable.getSelectedRow(), 1);
+		
+		if(currentVersion.equals(version)) {
+			JOptionPane.showMessageDialog(this, version + " is the current version, please change versions before deleting.");
+		}
+		else {
+			vtm.removeEntity((Entity) vtm.getObjectAtRow(versionTable.getSelectedRow()));
+		}
+		
+		return version;
 	}
 	
 	public AddJarDialog getAddJarDialog() {

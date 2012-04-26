@@ -126,6 +126,10 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 		return versionComboBox;
 	}
 	
+	public boolean setAsCurrentVersion() {
+		return setAsCurrentVersion.isSelected();
+	}
+	
 	public void addSubmitButtonListener(ActionListener aListener) {
 		submit.addActionListener(aListener);
 	}
@@ -136,6 +140,10 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 	
 	public void addNameTextDocumentListener(DocumentListener dListener) {
 		nameText.getDocument().addDocumentListener(dListener);
+	}
+	
+	public void addSetAsCurrentVersionListener(ActionListener aListener) {
+		setAsCurrentVersion.addActionListener(aListener);
 	}
 	
 	public Entity getSelectedEntity() {

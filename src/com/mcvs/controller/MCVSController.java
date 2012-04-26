@@ -46,6 +46,7 @@ public class MCVSController {
 		view.addAboutItemListener(new AboutListener());
 		view.addVersionTableListener(new VersionTableMouseListener());
 		view.addRenameItemListener(new RenameItemListener());
+		view.addDeleteItemListener(new DeleteItemListener());
 		
 		//Add action listeners to the add jar dialog controls
 		view.getAddJarDialog().addSubmitButtonListener(new AddJarSubmitButtonListener());
@@ -149,8 +150,42 @@ public class MCVSController {
 				ex.printStackTrace();
 				//System.out.println(ex.getMessage());
 			}
+			/*
+			 * If the setAsCurrentVersion checkbox is checked replace the current
+			 * Minecraft version with the one just added.
+			 */
+			if(temp.setAsCurrentVersion()) {
+				try {
+					model.moveVersion(destEntity.getVersion(), destEntity.getName());
+				}
+				catch (FileNotFoundException ex) {
+					ex.printStackTrace();
+					JOptionPane.showConfirmDialog(view, "Something went wrong when moving the " +
+							"Minecraft jar file. Hit okay to send error to developer.", "Error", JOptionPane.WARNING_MESSAGE);
+				}
+				catch (IOException ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
+				}
+				
+				/*
+				 * Updates the currentVer text file and sets the current version label
+				 * to the selected value
+				 */
+				model.updateCurrentVersion(destEntity.getVersion());
+				view.setCurrentVersionLabel(destEntity.getVersion());
+			}
+			
+			view.addEntityToTable(destEntity);
 			temp.setVisible(false);
 		}
+	}
+	
+	class SetAsCurrentVersionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		}
+		
 	}
 	
 	class AddJarCancelButtonListener implements ActionListener {
@@ -327,8 +362,33 @@ public class MCVSController {
 	
 	class RenameItemListener implements ActionListener {
 		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			JOptionPane.showInputDialog(view, "Enter new name for file:", "New name");
+		public void actionPerformed(ActionEvent e) {
+			String value = JOptionPane.showInputDialog(view, "Enter new name for file:", "New name");
+			
+			if(value!=null && value.trim()!="") {
+				Entity entity = view.renameEntityInTable(value);
+				try {
+					model.renameFile(entity.getVersion()+"/"+entity.getName(), entity.getVersion()+"/"+value);
+					model.writeEntityFile(value, entity.getVersion());
+				} 
+				catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
+	}
+	
+	class DeleteItemListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int opt = JOptionPane.showConfirmDialog(view, "Are you sure you want to delete this" +
+					" version of Minecraft?", "Delete file", JOptionPane.WARNING_MESSAGE);
+			
+			if(opt==JOptionPane.YES_OPTION) {
+				model.deleteVersionFile(view.removeEntityFromTable(model.getCurrentVersion(false)));
+			}
+		}
+		
 	}
 }
