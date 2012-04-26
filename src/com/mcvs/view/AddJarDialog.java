@@ -105,8 +105,21 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 		}*/
 	}
 	
+	public String getNameText() {
+		return nameText.getText();
+	}
+	
+	public void setNameTextEnabled(boolean enabled) {
+		nameText.setEnabled(enabled);
+	}
+	
+	public void setSubmitButtonEnabled(boolean enabled) {
+		submit.setEnabled(enabled);
+	}
+	
 	public void setListViewData(ArrayList<Entity> list) {
 		listView.setModel(new FileListModel(list));
+		listView.setSelectedIndex(0);
 	}
 	
 	public JComboBox getVersionComboBox() {
@@ -119,6 +132,18 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 	
 	public void addCancelButtonListener(ActionListener aListener) {
 		cancel.addActionListener(aListener);
+	}
+	
+	public void addNameTextDocumentListener(DocumentListener dListener) {
+		nameText.getDocument().addDocumentListener(dListener);
+	}
+	
+	public Entity getSelectedEntity() {
+		return (Entity)listView.getSelectedValue();
+	}
+	
+	public Object getVersion() {
+		return versionComboBox.getSelectedItem();
 	}
 	
 	/*

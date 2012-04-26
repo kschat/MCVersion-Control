@@ -4,7 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-
+import javax.swing.event.*;
 import java.awt.*;
 import com.mcvs.view.*;
 import com.mcvs.core.*;
@@ -50,6 +50,7 @@ public class MCVSController {
 		//Add action listeners to the add jar dialog controls
 		view.getAddJarDialog().addSubmitButtonListener(new AddJarSubmitButtonListener());
 		view.getAddJarDialog().addCancelButtonListener(new AddJarCancelButtonListener());
+		view.getAddJarDialog().addNameTextDocumentListener(new AddJarNameTextDocumentListener());
 		
 		/*
 		 * Once everything is built, display the GUI
@@ -119,7 +120,27 @@ public class MCVSController {
 	class AddJarSubmitButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			AddJarDialog temp = view.getAddJarDialog();
+			Entity entity = temp.getSelectedEntity();
+			int opt = 0;
 			
+			if(!model.makeDirectory((String)temp.getVersion())) {
+				opt = JOptionPane.showConfirmDialog(view, "This version of Minecraft already" +
+						" exists, do you want to overwrite it?", "File already exists", JOptionPane.YES_NO_OPTION);
+			}
+			
+			if(opt==JOptionPane.NO_OPTION) 
+				return;
+			if(opt==JOptionPane.YES_OPTION) {
+				//TODO Delete existing minecraft file
+			}
+			try {
+				model.addVersion(entity.getDirectory()+entity.getName(), (String)temp.getVersion(), temp.getNameText());
+			} 
+			catch (IOException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
 		}
 	}
 	
@@ -130,19 +151,44 @@ public class MCVSController {
 		}
 	}
 	
+	class AddJarNameTextDocumentListener implements DocumentListener {
+		private AddJarDialog temp = view.getAddJarDialog();
+		
+		@Override
+		public void changedUpdate(DocumentEvent e) {
+			if(temp.getNameText().length()==0) {
+				temp.setSubmitButtonEnabled(false);
+			}
+			else {
+				temp.setSubmitButtonEnabled(true);
+			}
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent e) { 
+			if(temp.getNameText().length()==0) {
+				temp.setSubmitButtonEnabled(false);
+			}
+			else {
+				temp.setSubmitButtonEnabled(true);
+			}
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent e) {
+			if(temp.getNameText().length()==0) {
+				temp.setSubmitButtonEnabled(false);
+			}
+			else {
+				temp.setSubmitButtonEnabled(true);
+			}
+		}
+	}
+	
 	class VersionTableMouseListener implements MouseListener {
 
 		@Override
-		public void mouseClicked(MouseEvent e) { }
-
-		@Override
-		public void mouseEntered(MouseEvent e) { }
-
-		@Override
-		public void mouseExited(MouseEvent e) { }
-
-		@Override
-		public void mousePressed(MouseEvent e) {
+		public void mouseClicked(MouseEvent e) { 
 			//Checks if the user double clicked using the left mouse button
 			if(e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
 				JTable tempTable = view.getVersionTable();
@@ -183,6 +229,50 @@ public class MCVSController {
 						view.setCurrentVersionLabel(tempVer);
 					}
 				}
+			}
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) { }
+
+		@Override
+		public void mouseExited(MouseEvent e) { }
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			//Checks of the right mouse button was released
+			if(e.getButton() == MouseEvent.BUTTON3) {
+				/*
+				 * Stores a temp reference of the views JTable and gets the row
+				 * that contains the point at e.getPoint
+				 */
+				JTable temp = view.getVersionTable();
+				int r = temp.rowAtPoint(e.getPoint());
+				
+				/*
+				 * Makes sure the value of r is within the bounds of the tables rows
+				 * if it is set that row as the selected row; else clear the current
+				 * selected row.
+				 */
+				if (r >= 0 && r < temp.getRowCount()) {
+					temp.setRowSelectionInterval(r, r);
+				} else {
+					temp.clearSelection();
+				}
+	            
+				/*
+				 * Get the row index by getting the selected row, if that index is
+				 * less than 0, return out of the function.
+				 */
+	            int rowindex = temp.getSelectedRow();
+	            if (rowindex < 0) {
+	                return;
+	            }
+	            
+	            //Display the popup menu at the clicked point
+	            if (e.isPopupTrigger() && e.getComponent() instanceof JTable ) {
+	                view.showPopupMenu(e.getComponent(), e.getX(), e.getY());
+	            }
 			}
 		}
 

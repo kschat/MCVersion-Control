@@ -50,7 +50,7 @@ public class MCVSModel {
 	 */
 	public Vector<Entity> getEntities() {
 		Vector<Entity> entities = new Vector<Entity>();
-		File[] files = new File(platformManager.getDataDirectory()+"/versions").listFiles();
+		File[] files = new File(platformManager.getDataDirectory()+"versions").listFiles();
 		
 		try {
 			for(int i=0; i<files.length; i++) {
@@ -81,7 +81,7 @@ public class MCVSModel {
 		if(read) {
 			String[] temp;
 			try {
-				temp = FileManager.readLinesFromFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()));
+				temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"currentVer.txt"));
 				currentVersion = temp[0];
 			} 
 			catch (IOException ex) {
@@ -102,7 +102,7 @@ public class MCVSModel {
 	 */
 	public void updateCurrentVersion(String ver) {
 		try {
-			FileManager.writeToFile(new File(this.getClass().getResource("/data/currentVer.txt").getPath()), ver);
+			FileManager.writeToFile(new File(platformManager.getDataDirectory()+"currentVer.txt"), ver);
 			currentVersion = ver;
 		}
 		catch (IOException ex) {
@@ -121,7 +121,7 @@ public class MCVSModel {
 	public String[] getAllMCVersions() {
 		String[] temp = null;
 		try {
-			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"/comboBoxVers"));
+			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"comboBoxVers"));
 		} 
 		catch (IOException ex) {
 			// TODO Auto-generated catch block
@@ -141,7 +141,7 @@ public class MCVSModel {
 	public String getMCVSVersion() {
 		String[] temp = null;
 		try {
-			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"/MCVSver"));
+			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"MCVSver"));
 			
 		} 
 		catch (IOException ex) {
@@ -159,8 +159,21 @@ public class MCVSModel {
 	 * TODO Implement more efficient method of storing files
 	 */
 	public void moveVersion(String version, String filename) throws IOException {
-		FileManager.moveFile(new File(platformManager.getDataDirectory()+"/versions/"+version+"/"+filename),
+		System.out.println(platformManager.getMinecraftDirectory()+"minecraft.jar");
+		FileManager.moveFile(new File(platformManager.getVersionsDirectory()+version+"/"+filename),
 				new File(platformManager.getMinecraftDirectory()+"minecraft.jar"));
+	}
+	
+	public void addVersion(String source, String dest, String filename) throws IOException {
+		FileManager.moveFile(new File(source),
+				new File(platformManager.getVersionsDirectory()+dest+"/"+filename));
+	}
+	
+	public boolean makeDirectory(String path) {
+		System.out.println(platformManager.getVersionsDirectory()+path);
+		boolean created = new File(platformManager.getVersionsDirectory()+path).mkdir();
+		
+		return created;
 	}
 	
 	/*

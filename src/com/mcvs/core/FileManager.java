@@ -80,7 +80,7 @@ public class FileManager {
 	}
 	
 	/*
-	 * Creates a file if the file and returns true if the file doesn't already exist.
+	 * Creates a file and returns true if the file doesn't already exist.
 	 * Does nothing and returns false otherwise.
 	 */
 	public static boolean createFile(File filename) throws IOException {
