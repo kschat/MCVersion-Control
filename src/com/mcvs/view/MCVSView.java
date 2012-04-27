@@ -219,6 +219,10 @@ public class MCVSView extends AbstractWindow {
 		reportBugItem.addActionListener(aListener);
 	}
 	
+	public void addUpdateItemListener(ActionListener aListener) {
+		updateItem.addActionListener(aListener);
+	}
+	
 	public void addVersionTableListener(MouseListener mListener) {
 		versionTable.addMouseListener(mListener);
 	}

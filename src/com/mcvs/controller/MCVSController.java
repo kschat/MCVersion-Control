@@ -118,37 +118,64 @@ public class MCVSController {
 		}
 	}
 	
+	/*
+	 * Class used to implement the submit button functionality on 
+	 * the AddJarDialog frame.
+	 */
 	class AddJarSubmitButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			/*
+			 * Creates temporary reference objects of the AddJarDialog, source
+			 * entity object, and the destination entity object.
+			 */
 			AddJarDialog temp = view.getAddJarDialog();
 			Entity sourceEntity = temp.getSelectedEntity();
 			Entity destEntity = new Entity(temp.getNameText(), (String)temp.getVersion(), "");
 			int opt = -1;
 			
+			//Checks that the version doesn't already exist in the versions directory
 			if(!model.makeDirectory((String)temp.getVersion())) {
 				opt = JOptionPane.showConfirmDialog(view, "This version of Minecraft already" +
 						" exists, do you want to overwrite it?", "File already exists", JOptionPane.YES_NO_OPTION);
 			}
 			
+			/*
+			 * If the version already exists and the user doesn't want to replace
+			 * it then return out of the method.
+			 */
 			if(opt==JOptionPane.NO_OPTION) {
 				return;
 			}
+			
+			/*
+			 * If the version already exists and the user does want to replace 
+			 * it then attempt to delete the directory for the old version and 
+			 * create a directory for the new version.
+			 */
 			if(opt==JOptionPane.YES_OPTION) {
 				boolean deleted = model.deleteVersionFile(destEntity.getVersion());
 				boolean made = model.makeDirectory(destEntity.getVersion());
+				/*
+				 * If the file old version wasn't deleted or the new version 
+				 * wasn't made, inform the user that something wen't wrong.
+				 */
 				if(!deleted || !made) {
+					//TODO Copy the old version and rewrite to if something went wrong.
 					JOptionPane.showMessageDialog(view, "Something went wrong when trying to delete the file. Please " +
 							"Try again.");
 				}
 			}
+			//Finally try to add the new version jar to the file
 			try {
 				model.addVersion(sourceEntity, destEntity);
 			} 
 			catch (IOException ex) {
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
-				//System.out.println(ex.getMessage());
+			} catch (InterruptedException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
 			}
 			/*
 			 * If the setAsCurrentVersion checkbox is checked replace the current
@@ -181,13 +208,9 @@ public class MCVSController {
 		}
 	}
 	
-	class SetAsCurrentVersionListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-		}
-		
-	}
-	
+	/*
+	 * Sets the add jar dialog frame to invisible
+	 */
 	class AddJarCancelButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -195,8 +218,20 @@ public class MCVSController {
 		}
 	}
 	
+	/*
+	 * Class used to listen to changes in the name TextField on the
+	 * AddJarDialog frame.
+	 */
 	class AddJarNameTextDocumentListener implements DocumentListener {
 		private AddJarDialog temp = view.getAddJarDialog();
+		
+		/*
+		 * (non-Javadoc)
+		 * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+		 * All methods perform the same task, just on different triggers.
+		 * If the name TextField is empty disable the submit button, else
+		 * enable the submit button.
+		 */
 		
 		@Override
 		public void changedUpdate(DocumentEvent e) {
@@ -229,6 +264,9 @@ public class MCVSController {
 		}
 	}
 	
+	/*
+	 * Classed used to capture mouse events from the version table
+	 */
 	class VersionTableMouseListener implements MouseListener {
 
 		@Override
@@ -285,7 +323,12 @@ public class MCVSController {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			//Checks of the right mouse button was released
+			/*
+			 * Needed in mousePressed and mouseReleased to work on all
+			 * operating systems.
+			 * 
+			 *  Checks of the right mouse button was released
+			 */
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				/*
 				 * Stores a temp reference of the views JTable and gets the row
@@ -323,7 +366,12 @@ public class MCVSController {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			//Checks of the right mouse button was released
+			/*
+			 * Needed in mousePressed and mouseReleased to work on all
+			 * operating systems.
+			 * 
+			 *  Checks of the right mouse button was released
+			 */
 			if(e.getButton() == MouseEvent.BUTTON3) {
 				/*
 				 * Stores a temp reference of the views JTable and gets the row
@@ -360,34 +408,64 @@ public class MCVSController {
 		}
 	}
 	
+	/*
+	 * Class used to implement the renaming of filenames when selecting the
+	 * rename option on the JPopupMenu for the JTable.
+	 */
 	class RenameItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			
+			//Shows the dialog to get users input for the new name
 			String value = JOptionPane.showInputDialog(view, "Enter new name for file:", "New name");
 			
+			//Checks that the value entered by the user isn't null or empty
 			if(value!=null && value.trim()!="") {
+				/*
+				 * Renames the file in the JTable and passes the old name of the
+				 * file to a new entity object.
+				 */
 				Entity entity = view.renameEntityInTable(value);
 				try {
+					//Tries to rename the actual file and rewrite the entity file to match
 					model.renameFile(entity.getVersion()+"/"+entity.getName(), entity.getVersion()+"/"+value);
 					model.writeEntityFile(value, entity.getVersion());
 				} 
 				catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
+				} catch (InterruptedException ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
 				}
 			}
 		}
 	}
 	
+	/*
+	 * Class used to implement the deleting of a Minecraft version from the JTable
+	 */
 	class DeleteItemListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			//Makes sure the user meant to select the delete option
 			int opt = JOptionPane.showConfirmDialog(view, "Are you sure you want to delete this" +
 					" version of Minecraft?", "Delete file", JOptionPane.WARNING_MESSAGE);
 			
+			//If they did, remove the entity from the table and delete the version file
 			if(opt==JOptionPane.YES_OPTION) {
 				model.deleteVersionFile(view.removeEntityFromTable(model.getCurrentVersion(false)));
 			}
+		}	
+	}
+	
+	/*
+	 * Class used to check if an update is currently available for MCVersion-Control
+	 */
+	class UpdateItemListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			
 		}
 		
 	}

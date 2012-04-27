@@ -54,38 +54,31 @@ public class FileManager {
 	}
 	
 	/*
-	 * Helper method to determine if a path points to a file or 
-	 * directory that does exist
-	 */
-	private static boolean checkExistance(File path, boolean isDir) {
-		if(isDir) {
-			if(path.isDirectory()) {
-				return true;
-			}
-		}
-		else {
-			if(path.isFile()) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	/*
 	 * Method used to set the base path of the FileManager
 	 */
 	public void setBasePath(String bPath) {
 		basePath = bPath;
 	}
 	
+	public File getFileBrowser() {
+		return fileBrowser;
+	}
+	
+	public void setFileBrowser(File path) {
+		fileBrowser = path;
+	}
+	
 	/*
 	 * Creates a file and returns true if the file doesn't already exist.
 	 * Does nothing and returns false otherwise.
 	 */
-	public static boolean createFile(File filename) throws IOException {
+	public static boolean createFile(File filename, boolean hidden) throws IOException, InterruptedException {
 		if(!filename.exists()) {
 			filename.createNewFile();
+			
+			if(hidden) {
+				hideFile(filename);
+			}
 			return true;
 		}
 		
@@ -97,9 +90,13 @@ public class FileManager {
 	 * returns true if all went well. Returns false if the file directory
 	 * already exists.
 	 */
-	public static boolean createDirectory(File dir) {
+	public static boolean createDirectory(File dir, boolean hidden) throws IOException, InterruptedException {
 		if(!dir.exists()) {
 			dir.mkdir();
+			
+			if(hidden) {
+				hideFile(dir);
+			}
 			return true;
 		}
 		
@@ -110,7 +107,11 @@ public class FileManager {
 	 * Creates a file at filename if file doesn't exist. Writes
 	 * value to that file using FileChannel.
 	 */
-	public static void writeToFile(File filename, String value) throws IOException {
+	public static void writeToFile(File filename, String value, boolean hidden) throws IOException, InterruptedException {
+		if(hidden) {
+			unhideFile(filename);
+		}
+		
 		if(!filename.exists()) {
 			filename.createNewFile();
 		}
@@ -129,6 +130,10 @@ public class FileManager {
 		}
 		finally {
 			fileWriter.close();
+		}
+		
+		if(hidden) {
+			hideFile(filename);
 		}
 	}
 	
@@ -262,5 +267,15 @@ public class FileManager {
 		
 		//Return false otherwise
 		return false;
+	}
+	
+	public static void hideFile(File path) throws IOException, InterruptedException {
+		Process p = Runtime.getRuntime().exec("attrib +H " + path.getPath());
+		p.waitFor();
+	}
+	
+	public static void unhideFile(File path) throws IOException, InterruptedException {
+		Process p = Runtime.getRuntime().exec("attrib -H " + path.getPath());
+		p.waitFor();
 	}
 }

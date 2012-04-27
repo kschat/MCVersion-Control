@@ -1,84 +1,37 @@
 package com.mcvs.tests;
 
 import com.mcvs.core.*;
+import com.mcvs.installer.*;
+
 import java.io.*;
 
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 public class tester {
-	/*
-	public static void main(String[] args) {
-		FileManager fm = FileManager.getInstance();
-		File file = new File(System.getProperty("user.home")+"/Desktop/test.txt");
-		File dir = new File(System.getProperty("user.home")+"/Desktop/testDir/");
-		//try {
+	
+	public static void main(String[] args) throws IOException {
+		/*
+		 * Moves the JMenuBar from the JFrame to the OS X top tool bar to make the application
+		 * look more native. Also changes the display name of the application on OS X from 
+		 * the package name to 'Minecraft Version Control'
+		 */
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Installer");
 		
-		FileManager.deleteDirectory(dir, true);
-		FileManager.createDirectory(dir);
+		/*
+		 * Sets the look and feel to the current systems default look and feel
+		 */
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (UnsupportedLookAndFeelException ex) {ex.printStackTrace();} 
+		catch (ClassNotFoundException ex) {ex.printStackTrace();} 
+		catch (InstantiationException ex) {ex.printStackTrace();} 
+		catch (IllegalAccessException ex) {ex.printStackTrace();}
 		
-			for(int i=0; i<1000; i++) {
-				try {
-					FileManager.createFile(new File(dir.getPath()+"/File"+i+".txt"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			FileManager.deleteDirectory(dir, true);
-			
-			
-			if(FileManager.createFile(file)) {
-				FileManager.writeToFile(file, "ASDFASDFASDF");
-				System.out.println("File created");
-			}
-			else {
-				System.out.println("File already exists.");
-			}
-			
-			if(FileManager.deleteFile(file)) {
-				System.out.println("File deleted");
-			}
-			else {
-					System.out.println("File was not deleted.");
-			}
-			
-			if(FileManager.createDirectory(dir)) {
-				System.out.println("Directory created");
-			}
-			else {
-				System.out.println("Directory already exists");
-			}
-			
-			if(FileManager.deleteDirectory(dir, false)) {
-				System.out.println("Directory deleted");
-			}
-			
-			if(FileManager.createDirectory(dir)) {
-				System.out.println("Directory created");
-				FileManager.createFile(new File(dir.getPath()+"/File1"));
-				FileManager.createFile(new File(dir.getPath()+"/File2"));
-				System.out.println("Filled directory created");
-			}
-			else {
-				System.out.println("Directory already exists");
-			}
-			
-			if(FileManager.deleteDirectory(dir, false)) {
-				System.out.println("Filled directory deleted");
-			}
-			else {
-				System.out.println("Filled directory wasn't deleted");
-			}
-			
-			if(FileManager.deleteDirectory(dir, true)) {
-				System.out.println("Filled directory deleted");
-			}
-			else {
-				System.out.println("Filled directory wasn't deleted");
-			}
-			
-		//}
-		//catch (IOException e) {
-			//e.printStackTrace();
-		//}
-	}*/
+		InstallerGUI view = new InstallerGUI("Install Minecraft Version Control");
+		Installer model = Installer.getInstance();
+		InstallerController controller = InstallerController.getInstance(model, view);
+	}
 }

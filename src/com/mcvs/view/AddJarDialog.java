@@ -9,8 +9,8 @@ import java.io.*;
 import java.util.*;
 
 //TODO: Finish porting for new application pattern
-public class AddJarDialog extends JDialog implements DocumentListener {
-	private final int WIDTH=300;
+public class AddJarDialog extends JDialog {
+	private final int WIDTH=290;
 	private final int HEIGHT=200;
 	private JPanel mainPanel, controlPanel, buttonPanel;
 	private JList listView;
@@ -191,35 +191,5 @@ public class AddJarDialog extends JDialog implements DocumentListener {
 		if(e.getSource().equals(cancel)) {
 			this.dispose();
 		}
-	}
-	*/
-	@Override
-	public void changedUpdate(DocumentEvent e) { 
-		if(this.nameText.getText().length()==0) {
-			this.submit.setEnabled(false);
-		}
-		else {
-			this.submit.setEnabled(true);
-		}
-	}
-
-	@Override
-	public void insertUpdate(DocumentEvent e) { 
-		if(this.nameText.getText().length()==0) {
-			this.submit.setEnabled(false);
-		}
-		else {
-			this.submit.setEnabled(true);
-		}
-	}
-
-	@Override
-	public void removeUpdate(DocumentEvent e) {
-		if(this.nameText.getText().length()==0) {
-			this.submit.setEnabled(false);
-		}
-		else {
-			this.submit.setEnabled(true);
-		}
-	}
+	}*/
 }

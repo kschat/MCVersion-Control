@@ -57,7 +57,7 @@ public class MCVSModel {
 			for(int i=0; i<files.length; i++) {
 				if(files[i].isDirectory()) {
 					String[] temp;
-					temp = FileManager.readLinesFromFile(new File(files[i]+"/entity.txt"));
+					temp = FileManager.readLinesFromFile(new File(files[i]+"/entity"));
 					entities.add(new Entity(temp[0], temp[1], files[i].getPath()));
 				}
 			}
@@ -82,7 +82,7 @@ public class MCVSModel {
 		if(read) {
 			String[] temp;
 			try {
-				temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"currentVer.txt"));
+				temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"currentVer"));
 				currentVersion = temp[0];
 			} 
 			catch (IOException ex) {
@@ -103,11 +103,14 @@ public class MCVSModel {
 	 */
 	public void updateCurrentVersion(String ver) {
 		try {
-			FileManager.writeToFile(new File(platformManager.getDataDirectory()+"currentVer.txt"), ver);
+			FileManager.writeToFile(new File(platformManager.getDataDirectory()+"currentVer"), ver, true);
 			currentVersion = ver;
 		}
 		catch (IOException ex) {
 			//TODO Auto-generated catch block
+			ex.printStackTrace();
+		} catch (InterruptedException ex) {
+			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 	}
@@ -164,13 +167,13 @@ public class MCVSModel {
 				new File(platformManager.getMinecraftDirectory()+"minecraft.jar"));
 	}
 	
-	public void addVersion(Entity source, Entity dest) throws IOException {
+	public void addVersion(Entity source, Entity dest) throws IOException, InterruptedException {
 		FileManager.moveFile(new File(source.getDirectory()+source.getName()),
 				new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/"+dest.getName()));
 		
-		FileManager.createFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity.txt"));
-		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity.txt"), 
-				dest.getName()+"\n"+dest.getVersion().trim());
+		FileManager.createFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity"), true);
+		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity"), 
+				dest.getName()+"\n"+dest.getVersion().trim(), true);
 	}
 	
 	public boolean makeDirectory(String path) {
@@ -195,7 +198,7 @@ public class MCVSModel {
 		return deleted;
 	}
 	
-	public boolean makeFile(String filename) throws IOException {
+	public boolean makeFile(String filename) throws IOException, InterruptedException {
 		boolean created = new File(platformManager.getVersionsDirectory()+filename).createNewFile();
 		return created;
 	}
@@ -203,9 +206,9 @@ public class MCVSModel {
 	/*
 	 * Writes the name and version to a entity file
 	 */
-	public void writeEntityFile(String name, String ver) throws IOException {
+	public void writeEntityFile(String name, String ver) throws IOException, InterruptedException {
 		System.out.println("Name: " + name + "Ver: " + ver);
-		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/entity.txt"), name+"\n"+ver);
+		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/entity"), name+"\n"+ver, true);
 	}
 	
 	public void renameFile(String oldName, String newName) throws IOException {

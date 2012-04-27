@@ -1,11 +1,12 @@
+package com.mcvs.installer;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
-
-import com.alee.laf.WebLookAndFeel;
+import com.mcvs.core.*;
 
 public class InstallerGUI extends JFrame implements ActionListener, DocumentListener {
 	private final int HEIGHT=450;
@@ -24,9 +25,8 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 	private ButtonGroup installGroup;
 	private JLabel[] steps;
 	
-	public InstallerGUI() throws IOException {
-		super("Minecraft Version Swapper");
-		installer = Installer.getInstance(OS.windows);
+	public InstallerGUI(String t) throws IOException {
+		super(t);
 		mainPanel = new JPanel();
 		contentPanel = new JPanel();
 		mainButtonPanel = new JPanel();
@@ -81,12 +81,7 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		mainPanel.add(contentPanel, BorderLayout.CENTER);
 		mainPanel.add(title, BorderLayout.NORTH);
 		
-		backButton.addActionListener(this);
-		nextButton.addActionListener(this);
-		cancelButton.addActionListener(this);
-		
 		this.add(mainPanel);
-		this.setVisible(true);
 	}
 	
 	private void emptyPanel(JPanel panel) {
@@ -116,18 +111,49 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		panel.add(statusPanel, BorderLayout.WEST);
 	}
 	
-	private void setStatus(int i, boolean on) {
+	class IntroductionPanel extends JPanel {
+		private JTextArea installTextArea;
+		
+		public IntroductionPanel(String text) {
+			this.setLayout(new BorderLayout());
+			
+			installTextArea.setText(text);
+			installTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			installTextArea.setEditable(false);
+			this.add(installTextArea, BorderLayout.CENTER);
+		}
+		
+		public void setText(String text) {
+			installTextArea.setText(text);
+		}
+		
+		public String getText() {
+			return installTextArea.getText();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*private void setStatus(int i, boolean on) {
 		if(on) {
 			steps[i].setText("<html><b>"+steps[i].getText()+"</b></html>");
 		}
 		else {
 			steps[i].setText("<html>"+steps[i].getText()+"</html>");
 		}
-	}
+	}*/
 	
 	private void buildIntroductionPanel(JPanel panel) {
 		emptyPanel(panel);
-		state = InstallerState.introduction;
+		//state = InstallerState.introduction;
 		introductionPanel.setLayout(new BorderLayout());
 		installTextArea.setEditable(false);
 		installTextArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -139,7 +165,7 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		//this.setVisible(true);
 	}
 	
-	private void buildSetDirectoryPanel(JPanel panel) {
+	/*private void buildSetDirectoryPanel(JPanel panel) {
 		emptyPanel(panel);
 		state = InstallerState.setDir;
 		setDirectoryPanel.setLayout(new BorderLayout());
@@ -160,17 +186,16 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		setDirectoryPanel.add(innerSetDirPanel, BorderLayout.CENTER);
 		panel.add(setDirectoryPanel, BorderLayout.CENTER);
 		
-		/*
-		 * TODO: Workaround, fix later.
-		 */
+		
 		dirTextField.getDocument().removeDocumentListener(this);
 		dirTextField.getDocument().addDocumentListener(this);
 		browseButton.removeActionListener(this);
 		browseButton.addActionListener(this);
 		
 		redrawPanel(panel);
-	}
+	}*/
 	
+	/*
 	private void buildInstallType(JPanel panel) {
 		emptyPanel(panel);
 		state = InstallerState.installType;
@@ -215,9 +240,6 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		installTypePanel.add(innerInstallPanel, BorderLayout.CENTER);
 		panel.add(installTypePanel, BorderLayout.CENTER);
 		
-		/*
-		 * TODO: Workaround, fix later.
-		 */
 		dirTextField.getDocument().removeDocumentListener(this);
 		dirTextField.getDocument().addDocumentListener(this);
 		browseButton.removeActionListener(this);
@@ -227,8 +249,9 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		addJarInstall.addActionListener(this);
 		
 		redrawPanel(panel);
-	}
+	}*/
 	
+	/*
 	private void buildSummaryPanel(JPanel panel) {
 		emptyPanel(panel);
 		state = InstallerState.summary;
@@ -240,11 +263,11 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		summaryPanel.add(message1);
 		panel.add(summaryPanel);
 		redrawPanel(panel);
-	}
+	}*/
 	
 	private void buildFileChooser() {
 		fileChooser = new JFileChooser("Choose a directory...");
-		fileChooser.setCurrentDirectory(new File(installer.getDefaultInstallDir()));
+		//fileChooser.setCurrentDirectory(new File(installer.getDefaultInstallDir()));
 		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		fileChooser.setMultiSelectionEnabled(false);
 	}
@@ -257,10 +280,30 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 		return null;
 	}
 	
+	public void enableNextButton(boolean enabled) {
+		this.nextButton.setEnabled(enabled);
+	}
+	
+	public void enableBackButton(boolean enabled) {
+		this.backButton.setEnabled(enabled);
+	}
+	
+	public void addBackButtonActionListener(ActionListener aListener) {
+		backButton.addActionListener(aListener);
+	}
+	
+	public void addNextButtonActionListener(ActionListener aListener) {
+		nextButton.addActionListener(aListener);
+	}
+	
+	public void addCancelButtonActionListener(ActionListener aListener) {
+		cancelButton.addActionListener(aListener);
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		switch(state) {
+		/*switch(state) {
 		case introduction:
 			this.buildSetDirectoryPanel(contentPanel);
 			backButton.setEnabled(true);
@@ -322,7 +365,7 @@ public class InstallerGUI extends JFrame implements ActionListener, DocumentList
 			if(value!=null) {
 				dirTextField.setText(value);
 			}
-		}
+		}*/
 	}
 	
 	/*
