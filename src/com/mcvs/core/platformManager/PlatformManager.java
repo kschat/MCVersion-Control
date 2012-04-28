@@ -7,6 +7,8 @@ public abstract class PlatformManager {
 	protected String dataDirectory;
 	protected String versionsDirectory;
 	protected String appDirectory;
+	protected String hideFileCommand;
+	protected String unhideFileCommand;
 	
 	/*
 	 * Abstract class used to help MCVSModel complete platform specific 
@@ -36,4 +38,6 @@ public abstract class PlatformManager {
 	abstract public String getDataDirectory();
 	abstract public String getVersionsDirectory();
 	abstract public String getAppDirectory();
+	abstract public String getHideFileCommand();
+	abstract public String getUnhideFileCommand();
 }

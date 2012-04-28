@@ -8,9 +8,10 @@ public class MacManager extends PlatformManager {
 		homeDirectory = System.getProperty("user.home");
 		minecraftDirectory = homeDirectory + "/Library/Application Support/minecraft/bin/";
 		minecraftRunDirectory = "/Applications/Minecraft/Minecraft.app";
-		dataDirectory = this.getClass().getResource("/data").getPath()+"/";
+		appDirectory = homeDirectory + "/Library/Application Support/MCVS/";
+		dataDirectory = appDirectory+"data/";
 		versionsDirectory = dataDirectory + "versions/";
-		appDirectory = "";
+		hideFileCommand = ".";
 	}
 	
 	public static MacManager getInstance() {
@@ -49,5 +50,16 @@ public class MacManager extends PlatformManager {
 	@Override
 	public String getAppDirectory() {
 		return appDirectory;
+	}
+
+	@Override
+	public String getHideFileCommand() {
+		// TODO Auto-generated method stub
+		return hideFileCommand;
+	}
+
+	@Override
+	public String getUnhideFileCommand() {
+		return this.getHideFileCommand();
 	}
 }

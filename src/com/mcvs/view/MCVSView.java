@@ -107,7 +107,7 @@ public class MCVSView extends AbstractWindow {
 	 * TODO Use JFileChooser for windows, keep FileDialog for mac
 	 */
 	private void buildJarFileChooser() {
-		jarFileChooser = new FileDialog(this, "Choose a jar file...");
+		jarFileChooser = new FileDialog(this, "Choose a jar file");
 		//macFileChooser.setDirectory("/Users/kyleschattler/Desktop/jarfiles");
 		
 		class jarFilter implements FilenameFilter {

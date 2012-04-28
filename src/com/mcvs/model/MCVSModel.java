@@ -34,7 +34,6 @@ public class MCVSModel {
 			prefs.put("FIRST_TIME_RUN", "false");
 			return true;
 		}
-		System.out.println(prefs.get("FIRST_TIME_RUN", ""));
 		return false;
 	}
 	
@@ -117,7 +116,7 @@ public class MCVSModel {
 	 */
 	public void updateCurrentVersion(String ver) {
 		try {
-			FileManager.writeToFile(new File(platformManager.getAppDirectory()+"currentVer"), ver, true);
+			FileManager.writeToFile(new File(platformManager.getAppDirectory()+"currentVer"), ver, platformManager.getUnhideFileCommand());
 			currentVersion = ver;
 		}
 		catch (IOException ex) {
@@ -189,9 +188,9 @@ public class MCVSModel {
 		FileManager.moveFile(new File(source.getDirectory()+source.getName()),
 				new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/"+dest.getName()));
 		
-		FileManager.createFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity"), true);
+		FileManager.createFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity"), platformManager.getHideFileCommand());
 		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/entity"), 
-				dest.getName()+"\n"+dest.getVersion().trim(), true);
+				dest.getName()+"\n"+dest.getVersion().trim(), platformManager.getHideFileCommand());
 	}
 	
 	public boolean makeDirectory(String path) {
@@ -211,7 +210,6 @@ public class MCVSModel {
 	}
 	
 	public boolean deleteJarFile(String filename) {
-		System.out.println(platformManager.getVersionsDirectory()+filename);
 		boolean deleted = FileManager.deleteFile(new File(platformManager.getVersionsDirectory()+filename));
 		return deleted;
 	}
@@ -225,8 +223,7 @@ public class MCVSModel {
 	 * Writes the name and version to a entity file
 	 */
 	public void writeEntityFile(String name, String ver) throws IOException, InterruptedException {
-		System.out.println("Name: " + name + "Ver: " + ver);
-		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/entity"), name+"\n"+ver, true);
+		FileManager.writeToFile(new File(platformManager.getVersionsDirectory()+ver+"/entity"), name+"\n"+ver, platformManager.getHideFileCommand());
 	}
 	
 	public void renameFile(String oldName, String newName) throws IOException {
@@ -234,21 +231,23 @@ public class MCVSModel {
 		FileManager.moveFile(new File(platformManager.getVersionsDirectory()+oldName),
 				new File(platformManager.getVersionsDirectory()+newName));
 		
-		System.out.println("Old name: " + oldName + " New name: " + newName);
 		boolean delete = this.deleteJarFile(oldName);
-		System.out.println("Delete: " + delete);
 	}
 	
 	public void createWorkingDirectory() throws IOException, InterruptedException {
-		FileManager.createDirectory(new File(platformManager.getAppDirectory()), false);
-		FileManager.createDirectory(new File(platformManager.getDataDirectory()), false);
-		FileManager.createDirectory(new File(platformManager.getVersionsDirectory()), false);
-		FileManager.createFile(new File(platformManager.getAppDirectory()+"MCVSver"), true);
-		FileManager.createFile(new File(platformManager.getAppDirectory()+"currentVer"), true);
-		FileManager.createFile(new File(platformManager.getAppDirectory()+"comboBoxVers"), true);
+		boolean a = FileManager.createDirectory(new File(platformManager.getAppDirectory()), "");
+		FileManager.createDirectory(new File(platformManager.getDataDirectory()), "");
+		FileManager.createDirectory(new File(platformManager.getVersionsDirectory()), "");
+		FileManager.createFile(new File(platformManager.getAppDirectory()+"MCVSver"), "");
+		FileManager.createFile(new File(platformManager.getAppDirectory()+"currentVer"), "");
+		FileManager.createFile(new File(platformManager.getAppDirectory()+"comboBoxVers"), "");
 	}
 	
 	public void lockFile(String file) {
 		locker = new FileLockManager(new File(platformManager.getAppDirectory()+"/"+file));
+	}
+	
+	public PlatformManager getPlatformManger() {
+		return platformManager;
 	}
 }

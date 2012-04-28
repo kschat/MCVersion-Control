@@ -72,12 +72,12 @@ public class FileManager {
 	 * Creates a file and returns true if the file doesn't already exist.
 	 * Does nothing and returns false otherwise.
 	 */
-	public static boolean createFile(File filename, boolean hidden) throws IOException, InterruptedException {
+	public static boolean createFile(File filename, String hideCommand) throws IOException, InterruptedException {
 		if(!filename.exists()) {
 			filename.createNewFile();
 			
-			if(hidden) {
-				hideFile(filename);
+			if(!hideCommand.trim().equals("")) {
+				//hideFile(filename);
 			}
 			return true;
 		}
@@ -90,12 +90,12 @@ public class FileManager {
 	 * returns true if all went well. Returns false if the file directory
 	 * already exists.
 	 */
-	public static boolean createDirectory(File dir, boolean hidden) throws IOException, InterruptedException {
+	public static boolean createDirectory(File dir, String hideCommand) throws IOException, InterruptedException {
 		if(!dir.exists()) {
 			dir.mkdir();
 			
-			if(hidden) {
-				hideFile(dir);
+			if(!hideCommand.trim().equals("")) {
+				//hideFile(dir);
 			}
 			return true;
 		}
@@ -107,9 +107,9 @@ public class FileManager {
 	 * Creates a file at filename if file doesn't exist. Writes
 	 * value to that file using FileChannel.
 	 */
-	public static void writeToFile(File filename, String value, boolean hidden) throws IOException, InterruptedException {
-		if(hidden) {
-			unhideFile(filename);
+	public static void writeToFile(File filename, String value, String hideCommand) throws IOException, InterruptedException {
+		if(!hideCommand.trim().equals("")) {
+			//unhideFile(filename);
 		}
 		
 		if(!filename.exists()) {
@@ -132,8 +132,8 @@ public class FileManager {
 			fileWriter.close();
 		}
 		
-		if(hidden) {
-			hideFile(filename);
+		if(!hideCommand.trim().equals("")) {
+			//hideFile(filename);
 		}
 	}
 	
@@ -269,13 +269,17 @@ public class FileManager {
 		return false;
 	}
 	
+	
+	//TODO Fix the hide and unhide file API to work on all platforms
 	public static void hideFile(File path) throws IOException, InterruptedException {
-		Process p = Runtime.getRuntime().exec("attrib +H " + path.getPath());
+		String[] args = {path.getPath()};
+		Process p = Runtime.getRuntime().exec(args);
 		p.waitFor();
 	}
 	
 	public static void unhideFile(File path) throws IOException, InterruptedException {
-		Process p = Runtime.getRuntime().exec("attrib -H " + path.getPath());
+		String[] args = {path.getPath()};
+		Process p = Runtime.getRuntime().exec(args);
 		p.waitFor();
 	}
 }

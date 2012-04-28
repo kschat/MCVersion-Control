@@ -11,6 +11,8 @@ public class WindowsManager extends PlatformManager {
 		appDirectory = System.getenv("APPDATA")+"\\.MCVS\\";
 		dataDirectory = appDirectory + "\\data\\";
 		versionsDirectory = dataDirectory + "\\versions\\";
+		hideFileCommand = "attrib +H ";
+		unhideFileCommand = "attrib -H";
 	}
 	
 	public static WindowsManager getInstance() {
@@ -49,6 +51,16 @@ public class WindowsManager extends PlatformManager {
 	@Override
 	public String getAppDirectory() {
 		return appDirectory;
+	}
+
+	@Override
+	public String getHideFileCommand() {
+		return hideFileCommand;
+	}
+
+	@Override
+	public String getUnhideFileCommand() {
+		return unhideFileCommand;
 	}
 	
 }

@@ -23,8 +23,8 @@ public class MCVSController {
 		view = v;
 		model = m;
 		
+		this.firstBuildDirectories(model);
 		model.lockFile("MCVC.lock");
-		this.firstRun(model);
 		
 		/*
 		 * Gets the views JTable and sets the model with the data gathered from
@@ -60,7 +60,7 @@ public class MCVSController {
 		 * Once everything is built, display the GUI
 		 */
 		view.setVisible(true);
-		
+		this.firstRunPrompt();
 	}
 	
 	public static MCVSController getInstance(MCVSView v, MCVSModel m) {
@@ -71,8 +71,8 @@ public class MCVSController {
 		return INSTANCE;
 	}
 	
-	public void firstRun(MCVSModel model) {
-		//if(model.checkFirstRun()) {
+	public void firstBuildDirectories(MCVSModel model) {
+		if(model.checkFirstRun()) {
 			
 			try {
 				model.createWorkingDirectory();
@@ -85,7 +85,11 @@ public class MCVSController {
 				// TODO Auto-generated catch block
 				ex.printStackTrace();
 			}
-			
+		}
+	}
+	
+	public void firstRunPrompt() {
+		if(model.checkFirstRun()) {
 			int opt = JOptionPane.showConfirmDialog(view, "<html>It appears this is your first time running Minecraft " +
 					"Version Control.<br /> Would you like to setup your current version of Minecraft?<br /><br /><b>Note: " +
 					"If you don't then nothing will appear in your file chooser<br /> and any new jar you add " +
@@ -93,6 +97,7 @@ public class MCVSController {
 			
 			if(opt == JOptionPane.YES_OPTION) {
 				FileDialog fileDialog = view.getFileChooser();
+				fileDialog.setDirectory(model.getPlatformManger().getMinecraftDirectory());
 				fileDialog.setVisible(true);
 				
 				if(fileDialog.getFile()!=null) {
@@ -104,7 +109,7 @@ public class MCVSController {
 					jarDialog.setVisible(true);
 				}
 			}
-		//}
+		}
 	}
 	
 	/*
@@ -145,6 +150,7 @@ public class MCVSController {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			FileDialog fileDialog = view.getFileChooser();
+			fileDialog.setDirectory(model.getPlatformManger().getHomeDirectory());
 			fileDialog.setVisible(true);
 			
 			if(fileDialog.getFile()!=null) {
