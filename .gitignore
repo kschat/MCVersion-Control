@@ -1,3 +1,4 @@
 .DS*
 a.jar
 bin/*
+.settings
