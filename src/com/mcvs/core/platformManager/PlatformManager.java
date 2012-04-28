@@ -6,6 +6,7 @@ public abstract class PlatformManager {
 	protected String minecraftRunDirectory;
 	protected String dataDirectory;
 	protected String versionsDirectory;
+	protected String appDirectory;
 	
 	/*
 	 * Abstract class used to help MCVSModel complete platform specific 
@@ -34,4 +35,5 @@ public abstract class PlatformManager {
 	abstract public String[] getMinecraftRunDirectory();
 	abstract public String getDataDirectory();
 	abstract public String getVersionsDirectory();
+	abstract public String getAppDirectory();
 }

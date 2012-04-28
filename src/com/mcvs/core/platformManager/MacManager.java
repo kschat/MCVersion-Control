@@ -10,6 +10,7 @@ public class MacManager extends PlatformManager {
 		minecraftRunDirectory = "/Applications/Minecraft/Minecraft.app";
 		dataDirectory = this.getClass().getResource("/data").getPath()+"/";
 		versionsDirectory = dataDirectory + "versions/";
+		appDirectory = "";
 	}
 	
 	public static MacManager getInstance() {
@@ -43,5 +44,10 @@ public class MacManager extends PlatformManager {
 	@Override
 	public String getVersionsDirectory() {
 		return versionsDirectory;
+	}
+
+	@Override
+	public String getAppDirectory() {
+		return appDirectory;
 	}
 }

@@ -1,6 +1,7 @@
 package com.mcvs.model;
 
 import java.util.*;
+import java.util.prefs.*;
 import java.io.*;
 
 import com.mcvs.core.*;
@@ -8,13 +9,16 @@ import com.mcvs.core.platformManager.*;
 
 public class MCVSModel {
 	private static MCVSModel INSTANCE = null;
-	private FileManager fileManager;	//TODO Decide if fileManager should be static class
+	private FileManager fileManager;			//TODO Decide if fileManager should be static class
 	private PlatformManager platformManager;
 	private String currentVersion = null;
+	private Preferences prefs;
+	private FileLockManager locker = null;
 	
 	private MCVSModel() {
 		platformManager = PlatformManager.getInstance();
 		fileManager = FileManager.getInstance(platformManager.getHomeDirectory());
+		prefs = Preferences.userNodeForPackage(this.getClass());
 	}
 	
 	public static MCVSModel getInstance() {
@@ -24,6 +28,16 @@ public class MCVSModel {
 		
 		return INSTANCE;
 	}
+	
+	public boolean checkFirstRun() {
+		if(prefs.get("FIRST_TIME_RUN", "").equals("")) {
+			prefs.put("FIRST_TIME_RUN", "false");
+			return true;
+		}
+		System.out.println(prefs.get("FIRST_TIME_RUN", ""));
+		return false;
+	}
+	
 	/*
 	 * TODO Remove try statements from Model, replace with throws and handle
 	 * the exception in the Controller.
@@ -51,7 +65,7 @@ public class MCVSModel {
 	 */
 	public Vector<Entity> getEntities() {
 		Vector<Entity> entities = new Vector<Entity>();
-		File[] files = new File(platformManager.getDataDirectory()+"versions").listFiles();
+		File[] files = new File(platformManager.getVersionsDirectory()).listFiles();
 		
 		try {
 			for(int i=0; i<files.length; i++) {
@@ -82,7 +96,7 @@ public class MCVSModel {
 		if(read) {
 			String[] temp;
 			try {
-				temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"currentVer"));
+				temp = FileManager.readLinesFromFile(new File(platformManager.getAppDirectory()+"currentVer"));
 				currentVersion = temp[0];
 			} 
 			catch (IOException ex) {
@@ -103,7 +117,7 @@ public class MCVSModel {
 	 */
 	public void updateCurrentVersion(String ver) {
 		try {
-			FileManager.writeToFile(new File(platformManager.getDataDirectory()+"currentVer"), ver, true);
+			FileManager.writeToFile(new File(platformManager.getAppDirectory()+"currentVer"), ver, true);
 			currentVersion = ver;
 		}
 		catch (IOException ex) {
@@ -123,16 +137,16 @@ public class MCVSModel {
 	 * the exception in the Controller.
 	 */
 	public String[] getAllMCVersions() {
-		String[] temp = null;
+		/*String[] temp = null;
 		try {
-			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"comboBoxVers"));
+			temp = FileManager.readLinesFromFile(new File(platformManager.getAppDirectory()+"comboBoxVers"));
 		} 
 		catch (IOException ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
-		}
+		}*/
 		
-		return temp;
+		return MinecraftVersions.getComboBoxVersions();
 	}
 	
 	/*
@@ -145,7 +159,7 @@ public class MCVSModel {
 	public String getMCVSVersion() {
 		String[] temp = null;
 		try {
-			temp = FileManager.readLinesFromFile(new File(platformManager.getDataDirectory()+"MCVSver"));
+			temp = FileManager.readLinesFromFile(new File(platformManager.getAppDirectory()+"MCVSver"));
 			
 		} 
 		catch (IOException ex) {
@@ -168,6 +182,10 @@ public class MCVSModel {
 	}
 	
 	public void addVersion(Entity source, Entity dest) throws IOException, InterruptedException {
+		if(!dest.getName().toUpperCase().endsWith(".JAR")) {
+			dest.setName(dest.getName()+".jar");
+		}
+		
 		FileManager.moveFile(new File(source.getDirectory()+source.getName()),
 				new File(platformManager.getVersionsDirectory()+dest.getVersion()+"/"+dest.getName()));
 		
@@ -219,5 +237,18 @@ public class MCVSModel {
 		System.out.println("Old name: " + oldName + " New name: " + newName);
 		boolean delete = this.deleteJarFile(oldName);
 		System.out.println("Delete: " + delete);
+	}
+	
+	public void createWorkingDirectory() throws IOException, InterruptedException {
+		FileManager.createDirectory(new File(platformManager.getAppDirectory()), false);
+		FileManager.createDirectory(new File(platformManager.getDataDirectory()), false);
+		FileManager.createDirectory(new File(platformManager.getVersionsDirectory()), false);
+		FileManager.createFile(new File(platformManager.getAppDirectory()+"MCVSver"), true);
+		FileManager.createFile(new File(platformManager.getAppDirectory()+"currentVer"), true);
+		FileManager.createFile(new File(platformManager.getAppDirectory()+"comboBoxVers"), true);
+	}
+	
+	public void lockFile(String file) {
+		locker = new FileLockManager(new File(platformManager.getAppDirectory()+"/"+file));
 	}
 }

@@ -33,8 +33,4 @@ public class UpdateManager extends SwingWorker<Void, String> {
 	protected Void doInBackground() throws Exception {
 		return null;
 	}
-	
-	public static void main(String[] args) {
-		new UpdateManager();
-	}
 }

@@ -23,6 +23,9 @@ public class MCVSController {
 		view = v;
 		model = m;
 		
+		model.lockFile("MCVC.lock");
+		this.firstRun(model);
+		
 		/*
 		 * Gets the views JTable and sets the model with the data gathered from
 		 * the getEntites method. Sets the current version label as well.
@@ -57,6 +60,7 @@ public class MCVSController {
 		 * Once everything is built, display the GUI
 		 */
 		view.setVisible(true);
+		
 	}
 	
 	public static MCVSController getInstance(MCVSView v, MCVSModel m) {
@@ -65,6 +69,42 @@ public class MCVSController {
 		}
 		
 		return INSTANCE;
+	}
+	
+	public void firstRun(MCVSModel model) {
+		//if(model.checkFirstRun()) {
+			
+			try {
+				model.createWorkingDirectory();
+			} 
+			catch (IOException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			} 
+			catch (InterruptedException ex) {
+				// TODO Auto-generated catch block
+				ex.printStackTrace();
+			}
+			
+			int opt = JOptionPane.showConfirmDialog(view, "<html>It appears this is your first time running Minecraft " +
+					"Version Control.<br /> Would you like to setup your current version of Minecraft?<br /><br /><b>Note: " +
+					"If you don't then nothing will appear in your file chooser<br /> and any new jar you add " +
+					"will overwrite your current version.</b><br /><br /></html>", "First run", JOptionPane.YES_NO_OPTION);
+			
+			if(opt == JOptionPane.YES_OPTION) {
+				FileDialog fileDialog = view.getFileChooser();
+				fileDialog.setVisible(true);
+				
+				if(fileDialog.getFile()!=null) {
+					AddJarDialog jarDialog = view.getAddJarDialog();
+					ArrayList<Entity> temp = new ArrayList<Entity>();
+					
+					temp.add(new Entity(fileDialog.getFile(), fileDialog.getDirectory()));
+					jarDialog.setListViewData(temp);
+					jarDialog.setVisible(true);
+				}
+			}
+		//}
 	}
 	
 	/*

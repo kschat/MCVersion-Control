@@ -1,11 +1,13 @@
-package com.mcvs.tests;
+package com.mcvs.core;
 
 import javax.swing.*;
 import com.mcvs.controller.*;
 import com.mcvs.model.*;
 import com.mcvs.view.*;
+import com.mcvs.core.*;
+import java.io.*;
 
-public class mainDemo {
+public class MCVersionControl {
 	public static void main(String[] args) {
 		/*
 		 * Moves the JMenuBar from the JFrame to the OS X top tool bar to make the application

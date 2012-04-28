@@ -14,6 +14,7 @@ public class MCVSView extends AbstractWindow {
 	JScrollPane versionTableScroll;
 	private JButton launchButton;
 	private FileDialog jarFileChooser;
+	JFileChooser chooser;
 	//private String versionTableValue="";
 	private JPopupMenu versionMenu;
 	private AddJarDialog jarDialog;
@@ -102,7 +103,9 @@ public class MCVSView extends AbstractWindow {
 		menu.add(helpMenu);
 		this.setJMenuBar(menu);
 	}
-	
+	/*
+	 * TODO Use JFileChooser for windows, keep FileDialog for mac
+	 */
 	private void buildJarFileChooser() {
 		jarFileChooser = new FileDialog(this, "Choose a jar file...");
 		//macFileChooser.setDirectory("/Users/kyleschattler/Desktop/jarfiles");
