@@ -4,7 +4,7 @@ MCVersion-Control is a program used to switch between different versions of Mine
 ## Development
 Still in development phase, most basic features are implemented. Hope to roll out v1.0b in a week or so, once the update manager is complete.
 
-## Licenses
+## License
 Minecraft Version Control is under an Open Source license.
 
 ## Versions
