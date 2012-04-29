@@ -72,7 +72,7 @@ public class MCVSController {
 	}
 	
 	public void firstBuildDirectories(MCVSModel model) {
-		if(model.checkFirstRun()) {
+		if(model.checkFirstRunDirectories()) {
 			
 			try {
 				model.createWorkingDirectory();

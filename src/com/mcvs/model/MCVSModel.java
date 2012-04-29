@@ -29,6 +29,14 @@ public class MCVSModel {
 		return INSTANCE;
 	}
 	
+	public boolean checkFirstRunDirectories() {
+		if(prefs.get("FIRST_TIME_RUN_DIR", "").equals("")) {
+			prefs.put("FIRST_TIME_RUN_DIR", "false");
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean checkFirstRun() {
 		if(prefs.get("FIRST_TIME_RUN", "").equals("")) {
 			prefs.put("FIRST_TIME_RUN", "false");
